@@ -1,12 +1,24 @@
-# This Is What Happened — Phase 2
+# This Is What Happened — Phase 2 Flat Upload
 
-Upload all of these items to the repository root:
+This package is designed for uploading from an iPhone.
+
+Upload every file shown in this folder together. There is no assets folder.
+
+Required files:
 
 - index.html
 - styles.css
 - app.js
-- the entire assets folder
+- README.md
+- brass-compass.jpg
+- card-catalog.jpg
+- family-book.jpg
+- gramophone.jpg
+- photo-album.jpg
+- wanderings-map.jpg
+- wood-room.jpg
 
-GitHub Pages remains set to `main` and `/(root)`.
+GitHub Pages remains configured as:
 
-Phase 2 adds independent images, a phone-first low-scroll entrance, six working rooms, an inventory drawer, a map prototype, family summaries, story and archive frameworks, and search.
+- Branch: main
+- Folder: / (root)
