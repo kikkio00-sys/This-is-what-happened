@@ -1,0 +1,18 @@
+THIS IS WHAT HAPPENED — RESTORED VERSION
+
+UPLOAD:
+Upload the entire contents of this folder together.
+Keep index.html, the numbered biography pages, and the assets folder at the same level.
+
+Included:
+- Restored mobile-first archive website
+- 127 supplied photographs preserved in the Gallery
+- 18 individual About pages
+- Existing family data and research already contained in the latest site
+- Approved map/tree design references in assets/design-concepts
+- Public buttons renamed from “Read life story” to “About”
+
+Important:
+The photographs are deliberately marked Awaiting Identification when the available files do not prove
+who appears in them. This prevents the site from attaching the wrong face to a person. The images do
+not need to be uploaded again; future identification only changes their labels and connections.
