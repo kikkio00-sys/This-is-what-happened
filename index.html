@@ -193,6 +193,15 @@ button.record-card{cursor:pointer}
 @media(min-width:760px){.record-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1050px){.record-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
+
+#familyMap{position:relative;width:100%!important;box-sizing:border-box}
+#familyMap .leaflet-container{width:100%!important;height:100%!important}
+.map-loading{position:absolute;inset:0;z-index:900;display:grid;place-items:center;background:#d8c9a9;color:#2a1d13;text-align:center;padding:24px;font-family:Georgia,"Times New Roman",serif}
+.map-loading-inner{max-width:280px}
+.map-loading strong{display:block;font-size:25px;margin-bottom:8px}
+.map-loading button{margin-top:12px;border:1px solid #6f542e;border-radius:999px;background:#241810;color:#f0dfbd;padding:10px 14px}
+.map-loading.hidden{display:none}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  integrity="sha256-p4NxAoJBhIINfQ3ynhZkWgF/MZbMZr9Y50jIF9eQyqk=" crossorigin="">
@@ -313,7 +322,15 @@ const mapMarkup=`
       <p class="map-note">Move the year backward to see only events known by that point in time.</p>
     </div>
   </section>
-  <div id="familyMap" aria-label="Interactive family history map"></div>
+  <div id="familyMap" aria-label="Interactive family history map">
+  <div class="map-loading" id="mapLoading">
+    <div class="map-loading-inner">
+      <strong>Opening the family atlas…</strong>
+      <span>The location cards below will still work if the map tiles are slow.</span>
+      <button type="button" id="mapRetry" style="display:none">Retry map</button>
+    </div>
+  </div>
+</div>
   <aside class="map-records" id="mapRecords"></aside>
 </div>`;
 const rooms={
@@ -628,27 +645,86 @@ function markerColor(family){
 }
 
 function initFamilyMap(){
+  const mapEl=document.getElementById("familyMap");
+  const loading=document.getElementById("mapLoading");
+  const retry=document.getElementById("mapRetry");
+  if(!mapEl)return;
+
+  const showFailure=()=>{
+    if(loading){
+      loading.classList.remove("hidden");
+      loading.querySelector("strong").textContent="The map is taking longer than expected.";
+      const span=loading.querySelector("span");
+      if(span)span.textContent="The location cards below are still available. Tap retry to load the map again.";
+      if(retry)retry.style.display="inline-block";
+    }
+  };
+
+  if(retry)retry.onclick=()=>{ if(familyMap){familyMap.remove();familyMap=null;} initFamilyMap(); };
+
   if(typeof L==="undefined"){
-    document.getElementById("familyMap").innerHTML='<div class="panel"><h3>Map could not load</h3><p>The map requires an internet connection. The location cards remain available below.</p></div>';
+    showFailure();
     renderMapRecords(archiveData.places);
     return;
   }
-  if(familyMap){familyMap.remove();}
-  familyMap=L.map("familyMap",{worldCopyJump:true}).setView([42,-35],2);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+
+  if(familyMap){familyMap.remove();familyMap=null;}
+
+  familyMap=L.map("familyMap",{
+    worldCopyJump:true,
+    zoomControl:true,
+    attributionControl:true,
+    preferCanvas:true
+  }).setView([42,-35],2);
+
+  const tiles=L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
     maxZoom:19,
+    updateWhenIdle:false,
+    keepBuffer:3,
+    crossOrigin:true,
     attribution:'&copy; OpenStreetMap contributors'
-  }).addTo(familyMap);
+  });
+
+  let tileLoaded=false;
+  tiles.on("load",()=>{
+    tileLoaded=true;
+    if(loading)loading.classList.add("hidden");
+    setTimeout(()=>familyMap&&familyMap.invalidateSize({pan:false}),50);
+  });
+  tiles.on("tileerror",()=>{ if(!tileLoaded)showFailure(); });
+  tiles.addTo(familyMap);
+
   markerLayer=L.layerGroup().addTo(familyMap);
 
   const year=document.getElementById("mapYear");
-  year.addEventListener("input",()=>{
-    document.getElementById("mapYearValue").textContent=year.value;
+  if(year)year.addEventListener("input",()=>{
+    const v=document.getElementById("mapYearValue");
+    if(v)v.textContent=year.value;
     updateFamilyMap();
   });
   document.querySelectorAll(".map-family-filter").forEach(box=>box.addEventListener("change",updateFamilyMap));
+
   updateFamilyMap();
-  setTimeout(()=>familyMap.invalidateSize(),150);
+
+  const repair=()=>{
+    if(!familyMap)return;
+    familyMap.invalidateSize({pan:false,animate:false});
+    updateFamilyMap();
+  };
+
+  [80,220,500,900,1500].forEach(ms=>setTimeout(repair,ms));
+
+  if("ResizeObserver" in window){
+    window._familyMapObserver?.disconnect?.();
+    window._familyMapObserver=new ResizeObserver(()=>setTimeout(repair,40));
+    window._familyMapObserver.observe(mapEl);
+  }
+
+  window.removeEventListener("orientationchange",window._familyMapOrientationRepair||(()=>{}));
+  window._familyMapOrientationRepair=()=>setTimeout(repair,350);
+  window.addEventListener("orientationchange",window._familyMapOrientationRepair);
+
+  setTimeout(()=>{if(!tileLoaded)showFailure()},5000);
 }
 
 function filteredPlaces(){
@@ -704,7 +780,7 @@ function openRoom(key){
   history.replaceState(null,"","#"+key);
   window.scrollTo({top:0,behavior:"auto"});
   if(key==="families") setTimeout(initFamilies,50);
-  if(key==="wanderings") setTimeout(initFamilyMap,50);
+  if(key==="wanderings") setTimeout(initFamilyMap,180);
   if(key==="album") setTimeout(initAlbum,50);
   if(key==="livelihoods") setTimeout(initLivelihoods,50);
   if(key==="stories") setTimeout(initStories,50);
