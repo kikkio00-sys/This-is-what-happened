@@ -1,0 +1,24 @@
+UPLOAD IN THIS ORDER
+
+1. index.html (replace the current index.html)
+2. Upload the remaining numbered HTML files to the SAME location. Do not create folders.
+
+Numbered pages:
+01. 01-gary-paul-zahner.html
+02. 02-brenda-joyce-downing-zahner.html
+03. 03-rachel-virginia-zahner-blackwell.html
+04. 04-aaron-paul-zahner.html
+05. 05-nicholas-nik-zahner.html
+06. 06-emily-renee-zahner.html
+07. 07-allison-celeste-zahner.html
+08. 08-jackson-zahner.html
+09. 09-jordan-esquivel.html
+10. 10-grace-rose-zahner-wright.html
+11. 11-zachary-zak-zahner.html
+12. 12-jeanine-hart.html
+13. 13-angie-esquivel.html
+14. 14-mary-beth-wahl.html
+15. 15-carson-wright.html
+16. 16-bubba-wright.html
+17. 17-brody-paul-blackwell.html
+18. 18-vance-cully-blackwell.html

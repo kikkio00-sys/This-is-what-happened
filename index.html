@@ -336,9 +336,6 @@ const archiveData={
   familyUnits:[{
     id:"blackwell-household-1",family:"Blackwell",title:"The Blackwell Household",status:"Family Unit 1 — complete for first publication",
     members:["p-bradley-blackwell","p-rachel-zahner","p-brody-blackwell","p-vance-blackwell"]
-  },{
-    id:"zahner-household-2",family:"Zahner",title:"The Gary and Brenda Zahner Household",status:"Family Unit 2 — complete for first publication",
-    members:["p-gary-zahner","p-brenda-downing","p-rachel-zahner","p-aaron-paul-zahner","p-nicholas-zahner","p-emily-zahner","p-allison-zahner","p-jackson-zahner","p-jordan-esquivel","p-grace-zahner-wright","p-zak-zahner","p-bubba-wright"]
   }]
 };
 
@@ -462,27 +459,6 @@ function ensureBlackwellFamilyUnit(){
   ].forEach(x=>addUnique(archiveData.livelihoods,x));
 }
 ensureBlackwellFamilyUnit();
-
-function ensureZahnerFamilyUnit(){
-  const addUnique=(arr,item)=>{if(!arr.some(x=>x.id===item.id))arr.push(item)};
-  [
-    {id:"p-aaron-paul-zahner",name:"Aaron Paul Zahner",family:"Zahner",living:true,generation:1,status:"Family account",source:"Family account",notes:"Son of Gary Paul Zahner and Brenda Joyce Downing Zahner; father of Emily, Allison, Jackson, and Jordan."},
-    {id:"p-nicholas-zahner",name:"Nicholas (Nik) Zahner",family:"Zahner",living:true,generation:1,status:"Family account",source:"Family account",notes:"Son of Gary Paul Zahner and Brenda Joyce Downing Zahner; father of Grace and Zak."},
-    {id:"p-emily-zahner",name:"Emily Renee Zahner",family:"Zahner",living:true,generation:0,status:"Family account",source:"Family account",occupation:"Artist",notes:"Creative work includes macramé and glassblowing."},
-    {id:"p-allison-zahner",name:"Allison Celeste Zahner",family:"Zahner",living:true,generation:0,status:"Family account",source:"Graduation announcement and family account",occupation:"Aviation",notes:"Earned a University of Central Missouri Aviation Management degree with a concentration in Airport and Flight Line Management. Holds a private pilot license, an instrument rating, and an MBA."},
-    {id:"p-jackson-zahner",name:"Jackson Zahner",family:"Zahner",living:true,generation:0,status:"Family account",source:"Family account",notes:"Family photographs preserve Christmas celebrations and family outings. His story remains open for future additions."},
-    {id:"p-jordan-esquivel",name:"Jordan Esquivel",family:"Zahner",living:true,generation:0,status:"Family account",source:"Family account",notes:"No photograph is currently available. This page can grow as photographs and memories are added."},
-    {id:"p-grace-zahner-wright",name:"Grace Rose Zahner Wright",family:"Zahner",living:true,generation:0,status:"Family account",source:"Family account",notes:"Married to Carson Wright and mother of Bubba Wright."},
-    {id:"p-zak-zahner",name:"Zachary (Zak) Zahner",family:"Zahner",living:true,generation:0,status:"Family account",source:"Family account",notes:"Family memories and traditions can be expanded as additional details are confirmed."},
-    {id:"p-bubba-wright",name:"Bubba Wright",family:"Zahner",birth:2025,living:true,generation:-1,status:"Family account",source:"Family account",notes:"Born November 2025. His story has only just begun."}
-  ].forEach(x=>addUnique(archiveData.people,x));
-  [
-    {id:"story-zahner-household",title:"The Gary and Brenda Zahner Household",family:"Zahner",status:"Family account",details:"Gary and Brenda created a family life remembered through hard work, creativity, laughter, celebrations, handmade gifts, and the ordinary moments that became lasting stories.",source:"Family account"},
-    {id:"story-brenda-laundry",title:"Brenda's Laundry Day Dance Parties",family:"Zahner",status:"Family memory",details:"Brenda made ordinary days fun. Laundry day became a dance party with Cyndi Lauper playing, turning a household chore into a memory her family still carries.",source:"Family account"},
-    {id:"story-gary-workshop",title:"Gary's Workshop",family:"Zahner",status:"Family memory",details:"In retirement, Gary's woodworking projects became Christmas presents. He made keepsake boxes, mosaic boxes, birdhouses, and personalized gifts for his family. The work became another way he showed love.",source:"Family account and family photographs"}
-  ].forEach(x=>addUnique(archiveData.stories,x));
-}
-ensureZahnerFamilyUnit();
 
 function archiveCounts(){
   const generations=new Set(archiveData.people.filter(p=>p.generation!==null&&p.generation!==undefined).map(p=>p.generation)).size;
@@ -751,7 +727,7 @@ function initFamilies(){
   app.innerHTML=`<div class="import-banner"><h3>Working tree imported</h3><p>The names and relationships taken from the screenshots are starting points only. Every imported connection is marked Possible or Placeholder until supporting records are attached.</p></div>
   <div class="record-grid">${archiveData.families.map(f=>{
     const r=familyRecords(f),s=familySummary(f),g=gapStats(f);
-    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}${f==="Blackwell"?" · Family Unit 1 complete":f==="Zahner"?" · Family Unit 2 complete":""}</small><h3>${f==="Blackwell"?"The Blackwell Household":f==="Zahner"?"The Gary & Brenda Zahner Household":s[0]}</h3><p>${f==="Blackwell"?"Brad, Rachel, Brody, and Vance — one complete household chapter.":f==="Zahner"?"Gary, Brenda, their children, grandchildren, spouses, and great-grandchild — one complete household chapter.":s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
+    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}${f==="Blackwell"?" · Family Unit 1 complete":f==="Zahner"?" · Family Unit 2 complete":""}</small><h3>${f==="Blackwell"?"The Blackwell Household":f==="Zahner"?"The Gary & Brenda Zahner Household":s[0]}</h3><p>${f==="Blackwell"?"Brad, Rachel, Brody, and Vance — one complete household chapter.":f==="Zahner"?"Gary, Brenda, their children, grandchildren, spouses, and the newest generation.":s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
   }).join("")}</div><div id="familyDetail"></div>`;
 }
 function showFamily(f){
@@ -789,33 +765,38 @@ He attended school in Ozark and Hollister and completed high school virtually th
   }
   if(f==="Zahner"){
     const profiles=[
-      {role:"Father · Grandfather · Craftsman",name:"Gary Paul Zahner",summary:"Gary's retirement became centered around woodworking and handmade Christmas gifts.",bio:`Gary's working life included creative and practical work. In retirement, woodworking gave him time to create keepsake boxes, mosaic boxes, birdhouses, and personalized Christmas gifts for his family.
+      {page:"01-gary-paul-zahner.html",role:"Father · Grandfather · Artist · Craftsman",name:"Gary Paul Zahner",summary:"Gary's creative working life continued into retirement through woodworking and handmade Christmas presents.",bio:`Gary built a life around making things. His work included artistic and construction projects for television and themed environments, where imagination had to become something real, sturdy, and convincing.
 
-The projects mattered not only because of what he made, but because each one was made for someone he loved. His workshop became part of the family's Christmas story.`},
-      {role:"Mother · Grandmother · Maker of ordinary-day joy",name:"Brenda Joyce Downing Zahner",summary:"Brenda was intelligent, hardworking, loving, and often the life of the party.",bio:`Brenda worked in Human Resources at Presbyterian Hospital in Oklahoma City and for 7-Eleven. She also served as a general manager of men's suit and clothing stores. After retirement, she worked with an estate sale company.
+Retirement gave him more time to create for the people he loved. His workshop produced keepsake boxes, mosaic designs, birdhouses, and personalized Christmas gifts. Those projects were more than hobbies. They became part of the family's holidays and a lasting expression of his care.`},
+      {page:"02-brenda-joyce-downing-zahner.html",role:"Mother · Grandmother · Keeper of joy",name:"Brenda Joyce Downing Zahner",summary:"Brenda was intelligent, hardworking, loving, and remembered for making ordinary days fun.",bio:`Brenda worked in Human Resources at Presbyterian Hospital in Oklahoma City and for 7-Eleven. She also managed men's suit and clothing stores and, after retirement, worked with an estate sale company.
 
-Her career is only one part of how her family remembers her. She was a loving mother, a caring grandmother, and someone who made ordinary days fun. One lasting memory is laundry day becoming a dance party with Cyndi Lauper playing.`},
-      {role:"Daughter",name:"Rachel Virginia Zahner Blackwell",summary:"Rachel's household continues in Family Unit 1 with Brad, Brody, and Vance.",bio:`Rachel is the daughter of Gary and Brenda. Her adult household is preserved separately as the Blackwell Household, allowing both family chapters to remain connected without repeating the entire story.`},
-      {role:"Son · Father",name:"Aaron Paul Zahner",summary:"Father of Emily, Allison, Jackson, and Jordan.",bio:`Aaron's page preserves his place in Gary and Brenda's household and connects the next generation: Emily, Allison, Jackson, and Jordan. Additional memories can be added without changing the family structure.`},
-      {role:"Son · Father",name:"Nicholas (Nik) Zahner",summary:"Father of Grace and Zachary “Zak” Zahner.",bio:`Nik's page preserves his place in Gary and Brenda's household and connects his children, Grace and Zak, to the larger family chapter.`}
+Her career mattered, but it did not define the whole of her life. Her family remembers a loving mother, a caring grandmother, and often the life of the party. Even laundry day could become a dance party when Brenda turned on Cyndi Lauper and filled an ordinary chore with music and laughter.`},
+      {page:"03-rachel-virginia-zahner-blackwell.html",role:"Daughter · Wife · Mother · Keeper of memories",name:"Rachel Virginia Zahner Blackwell",summary:"Rachel's story continues through the Blackwell household with Brad, Brody, and Vance.",bio:`Rachel built her career around her family, beginning in real estate and later working in retail management and resort hospitality management before retiring at forty-two.
+
+Her favorite roles have been mother and aunt. This archive grew from her belief that everyday family stories deserve to be preserved alongside official records.`},
+      {page:"04-aaron-paul-zahner.html",role:"Son · Father",name:"Aaron Paul Zahner",summary:"Aaron's family chapter continues through Emily, Allison, Jackson, and Jordan.",bio:`Aaron is one of Gary and Brenda's children and the father of Emily, Allison, Jackson, and Jordan. His page remains grounded in the family relationships and memories currently available and can grow as more stories are shared.`},
+      {page:"05-nicholas-nik-zahner.html",role:"Son · Father",name:"Nicholas “Nik” Zahner",summary:"Nik's family chapter continues through Grace and Zak.",bio:`Nik is one of Gary and Brenda's children and the father of Grace and Zachary “Zak” Zahner. His page is intentionally limited to confirmed family information until more personal memories are added.`}
     ];
-    const descendants=[
-      {name:"Emily Renee Zahner",detail:"Creative work includes macramé and glassblowing."},
-      {name:"Allison Celeste Zahner",detail:"Aviation Management degree, Airport and Flight Line Management concentration, private pilot license, instrument rating, and MBA."},
-      {name:"Jackson Zahner",detail:"Family photographs preserve Christmas celebrations and family outings. His story can grow over time."},
-      {name:"Jordan Esquivel",detail:"No photograph is currently available. The page remains ready for future memories and photographs."},
-      {name:"Grace Rose Zahner Wright",detail:"Married to Carson Wright and mother of Bubba Wright."},
-      {name:"Zachary “Zak” Zahner",detail:"Family memories and traditions can be expanded as details are confirmed."},
-      {name:"Bubba Wright",detail:"Born November 2025. The newest generation's story has only just begun."}
+    const nextGen=[
+      ["06-emily-renee-zahner.html","Emily Renee Zahner","Creative work includes macramé, glassblowing, and other artistic pursuits."],
+      ["07-allison-celeste-zahner.html","Allison Celeste Zahner","Aviation Management graduate, private pilot, instrument-rated pilot, and MBA."],
+      ["08-jackson-zahner.html","Jackson Zahner","Family celebrations, Christmas memories, and outings are preserved as his story grows."],
+      ["09-jordan-esquivel.html","Jordan Esquivel","This page begins with confirmed family connection and remains open for future photographs and memories."],
+      ["10-grace-rose-zahner-wright.html","Grace Rose Zahner Wright","Daughter of Nik, wife of Carson Wright, and mother of Bubba Wright."],
+      ["11-zachary-zak-zahner.html","Zachary “Zak” Zahner","A growing collection of family memories, humor, and traditions."],
+      ["17-brody-paul-blackwell.html","Brody Paul Blackwell","Rachel's son; artist, writer, and member of the next Zahner generation."],
+      ["18-vance-cully-blackwell.html","Vance Cully Blackwell","Rachel's son; appraiser, athlete, and adventure-seeker in the next Zahner generation."]
     ];
-    box.innerHTML=`<section class="family-unit-hero"><small>Family Unit 2 · Second published household</small><h3>The Gary & Brenda Zahner Household</h3><p>Gary and Brenda's family chapter is preserved through the lives of their children, grandchildren, spouses, and great-grandchild. The heart of this household is found in hard work, creativity, celebrations, handmade gifts, and the ordinary moments the family still remembers.</p><span class="family-unit-status">✓ Complete for this family-unit upload</span></section>
-    <section class="unit-section"><h3>Household index</h3><div class="values-grid"><div class="value-card"><strong>Gary Paul Zahner</strong><span>Father, grandfather, craftsman, and woodworker.</span></div><div class="value-card"><strong>Brenda Joyce Downing Zahner</strong><span>Mother, grandmother, hardworking professional, and the life of the party.</span></div><div class="value-card"><strong>Their children</strong><span>Rachel, Aaron, and Nicholas “Nik” Zahner.</span></div><div class="value-card"><strong>The next generations</strong><span>Emily, Allison, Jackson, Jordan, Grace, Zak, and Bubba.</span></div></div></section>
-    <div class="unit-grid">${profiles.map(p=>`<article class="unit-card"><div class="role">${safeText(p.role)}</div><h4>${safeText(p.name)}</h4><p>${safeText(p.summary)}</p><details><summary>Read the life story</summary><p>${safeText(p.bio)}</p></details></article>`).join("")}</div>
-    <section class="unit-section"><h3>Grandchildren and great-grandchild</h3><div class="unit-grid">${descendants.map(p=>`<article class="unit-card"><h4>${safeText(p.name)}</h4><p>${safeText(p.detail)}</p></article>`).join("")}</div></section>
-    <section class="unit-section"><h3>Spouses connected to this household</h3><p>Photographs are not currently available for the spouses. Their names and family connections remain included without invented biographies.</p><div class="school-grid"><div class="school-card"><strong>Jeanine Hart</strong><span>Page reserved for confirmed information and future photographs.</span></div><div class="school-card"><strong>Angie Esquivel</strong><span>Page reserved for confirmed information and future photographs.</span></div><div class="school-card"><strong>Mary Beth Wahl</strong><span>Page reserved for confirmed information and future photographs.</span></div><div class="school-card"><strong>Carson Wright</strong><span>Husband of Grace and father of Bubba. Additional information can be added later.</span></div></div></section>
-    <section class="unit-section"><h3>Brenda's laundry day dance parties</h3><div class="story-callout">Brenda made ordinary days memorable. Laundry day became a dance party with <strong>Cyndi Lauper</strong> playing, turning a household chore into one of the small stories that still explains who she was.</div></section>
-    <section class="unit-section"><h3>Gary's workshop</h3><div class="story-callout">Retirement gave Gary time to create. His woodworking projects became Christmas presents: keepsake boxes, mosaic boxes, birdhouses, and personalized gifts made specifically for family members. The gifts carried his time and care into the next generation.</div></section>
-    <section class="unit-section"><h3>Archive status</h3><p>Family Unit 2 now includes the complete household index, factual biographies for Gary and Brenda, the three children, the grandchildren and great-grandchild, the known spouses, and the two defining family memories already preserved. Missing photographs do not block publication; they can be added later through the Album or Research Desk.</p><div class="tree-toolbar"><button class="action-btn primary" onclick="addDiscoveryFor('photo','Zahner')">Add household photographs</button><button class="action-btn" onclick="addDiscoveryFor('source','Zahner')">Add supporting evidence</button><button class="action-btn" onclick="addDiscoveryFor('story','Zahner')">Add another memory</button></div></section>`;
+    const spouses=[
+      ["12-jeanine-hart.html","Jeanine Hart"],["13-angie-esquivel.html","Angie Esquivel"],["14-mary-beth-wahl.html","Mary Beth Wahl"],["15-carson-wright.html","Carson Wright"]
+    ];
+    box.innerHTML=`<section class="family-unit-hero"><small>Family Unit 2 · Zahner household</small><h3>The Gary & Brenda Zahner Household</h3><p>Gary and Brenda built a family shaped by creativity, hard work, laughter, handmade traditions, and the ability to make ordinary moments memorable. Their chapter now reaches through their children, grandchildren, spouses, and great-grandchild.</p><span class="family-unit-status">✓ Complete for this family-unit upload</span></section>
+    <div class="unit-grid">${profiles.map(p=>`<article class="unit-card"><div class="role">${safeText(p.role)}</div><h4>${safeText(p.name)}</h4><p>${safeText(p.summary)}</p><details><summary>Read the life story</summary><p>${safeText(p.bio)}</p></details><p><a class="action-btn" href="${p.page}">Open individual page</a></p></article>`).join("")}</div>
+    <section class="unit-section"><h3>The next generation</h3><p>This generation includes the children of Rachel, Aaron, and Nik. Brody and Vance are included here as Gary and Brenda's grandsons through Rachel.</p><div class="unit-grid">${nextGen.map(p=>`<article class="unit-card"><div class="role">Grandchild</div><h4>${safeText(p[1])}</h4><p>${safeText(p[2])}</p><p><a class="action-btn" href="${p[0]}">Open individual page</a></p></article>`).join("")}</div></section>
+    <section class="unit-section"><h3>Spouses and connected family</h3><div class="unit-grid">${spouses.map(p=>`<article class="unit-card"><div class="role">Connected family</div><h4>${safeText(p[1])}</h4><p>Included through family relationship. The biography remains brief until more personal information is shared.</p><p><a class="action-btn" href="${p[0]}">Open individual page</a></p></article>`).join("")}</div></section>
+    <section class="unit-section"><h3>A new generation</h3><div class="unit-grid"><article class="unit-card"><div class="role">Great-grandchild · Born November 2025</div><h4>Bubba Wright</h4><p>The newest chapter of the family. His story has only just begun.</p><p><a class="action-btn" href="16-bubba-wright.html">Open individual page</a></p></article></div></section>
+    <section class="unit-section"><h3>Family stories</h3><div class="story-callout"><strong>Brenda's laundry-day dance parties</strong><br>Laundry became a family memory when Brenda turned on Cyndi Lauper and made an ordinary household chore feel like a celebration.</div><div class="story-callout" style="margin-top:14px"><strong>Gary's workshop</strong><br>Retirement gave Gary time to make personalized Christmas presents—gifts carrying the time, patience, and care of the person who made them.</div></section>
+    <section class="unit-section"><h3>Archive status</h3><p>This chapter includes the family's current written biographies and relationship structure. Pages without photographs or detailed memories remain honest and brief rather than being filled with assumptions.</p></section>`;
     box.scrollIntoView({behavior:"smooth",block:"start"});return;
   }
   const generations=[...new Set(people.map(p=>p.generation).filter(x=>x!==null&&x!==undefined))].sort((a,b)=>b-a);
