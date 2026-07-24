@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="This Is What Happened — Family Batch 2: The Gary Paul Zahner and Brenda Joyce Downing Zahner family." />
+  <title>This Is What Happened | Family Batch 2</title>
+  <style>
+    :root {
+      --paper: #f7f1e8;
+      --ink: #2e2a25;
+      --muted: #71695f;
+      --accent: #7b4d35;
+      --accent-soft: #d8c0aa;
+      --card: #fffdf8;
+      --line: #d9cec2;
+      --shadow: 0 12px 30px rgba(63, 45, 33, 0.10);
+      --radius: 18px;
+      --max: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(216,192,170,.45), transparent 35%),
+        linear-gradient(180deg, #fbf7f1 0%, var(--paper) 100%);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.65;
+    }
+
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    .site-header {
+      min-height: 78vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 48px 20px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(rgba(46,42,37,.46), rgba(46,42,37,.58)),
+        url("images/family-batch-2-cover.jpg") center/cover no-repeat,
+        linear-gradient(135deg, #8a674f, #46362d);
+      color: white;
+    }
+
+    .hero {
+      max-width: 850px;
+      padding: 44px 30px;
+      backdrop-filter: blur(4px);
+      background: rgba(33, 27, 23, 0.28);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 24px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.22);
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: .82rem;
+      margin-bottom: 10px;
+      opacity: .9;
+    }
+
+    h1, h2, h3 { line-height: 1.15; margin-top: 0; }
+    h1 { font-size: clamp(2.7rem, 7vw, 5.6rem); margin-bottom: 16px; }
+    h2 { font-size: clamp(2rem, 4vw, 3.1rem); color: var(--accent); }
+    h3 { font-size: 1.35rem; }
+
+    .subtitle {
+      font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,253,248,.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      white-space: nowrap;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .94rem;
+    }
+
+    .nav-inner a {
+      text-decoration: none;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 999px;
+    }
+
+    .nav-inner a:hover {
+      color: var(--accent);
+      background: #f1e6dc;
+    }
+
+    main {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 58px 20px 80px;
+    }
+
+    section { margin-bottom: 74px; }
+
+    .intro {
+      max-width: 850px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.15rem;
+    }
+
+    .quote {
+      margin: 34px auto 0;
+      padding: 24px 28px;
+      max-width: 760px;
+      border-left: 5px solid var(--accent);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      font-size: 1.18rem;
+      font-style: italic;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      grid-column: span 6;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .card.full { grid-column: 1 / -1; }
+    .card.third { grid-column: span 4; }
+
+    .card-body { padding: 24px; }
+
+    .photo {
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #f8efe7;
+      background:
+        linear-gradient(rgba(75,54,42,.28), rgba(75,54,42,.46)),
+        var(--photo, linear-gradient(135deg, #9a765d, #5f4638));
+      background-position: center;
+      background-size: cover;
+      padding: 28px;
+    }
+
+    .photo span {
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 999px;
+      background: rgba(46,42,37,.35);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .85rem;
+    }
+
+    .person-title {
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+
+    .role {
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .92rem;
+      margin-bottom: 14px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .82rem;
+      background: #f0e4d9;
+      border: 1px solid #dfcbbb;
+      color: #5b4335;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .story {
+      background: linear-gradient(135deg, #fffdf8, #f2e6dc);
+      border-left: 6px solid var(--accent);
+      padding: 28px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .family-tree {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .tree-level {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .tree-person {
+      min-width: 190px;
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fffaf4;
+      padding: 14px 16px;
+    }
+
+    .tree-label {
+      text-align: center;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .placeholder-note {
+      color: var(--muted);
+      font-style: italic;
+      border-top: 1px dashed var(--line);
+      padding-top: 14px;
+      margin-top: 18px;
+    }
+
+    footer {
+      background: #302821;
+      color: #f7efe8;
+      text-align: center;
+      padding: 38px 20px;
+    }
+
+    footer p { margin: 4px 0; }
+
+    @media (max-width: 820px) {
+      .card, .card.third { grid-column: 1 / -1; }
+      .site-header { min-height: 68vh; }
+      .hero { padding: 34px 20px; }
+    }
+
+    @media print {
+      nav { display: none; }
+      .site-header { min-height: auto; color: #000; background: #fff; }
+      .hero { background: #fff; box-shadow: none; border: 1px solid #bbb; }
+      .card, .story, .family-tree { box-shadow: none; break-inside: avoid; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="hero">
+      <div class="eyebrow">This Is What Happened</div>
+      <h1>Family Batch 2</h1>
+      <p class="subtitle">The Gary Paul Zahner &amp; Brenda Joyce Downing Zahner Family</p>
+    </div>
+  </header>
+
+  <nav aria-label="Chapter navigation">
+    <div class="nav-inner">
+      <a href="#welcome">Welcome</a>
+      <a href="#family-tree">Family Tree</a>
+      <a href="#gary-brenda">Gary &amp; Brenda</a>
+      <a href="#children">Children</a>
+      <a href="#grandchildren">Grandchildren</a>
+      <a href="#spouses">Spouses</a>
+      <a href="#great-grandchildren">Great-Grandchildren</a>
+      <a href="#stories">Family Stories</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="welcome">
+      <div class="intro">
+        <h2>Welcome</h2>
+        <p>
+          Every family has people who become its foundation. For the Zahner family,
+          Gary and Brenda created a home where hard work, imagination, laughter,
+          and generosity shaped everyday life. Their influence continues through
+          their children, grandchildren, and great-grandchildren.
+        </p>
+        <div class="quote">
+          “Names tell us who our ancestors were. Stories tell us who they became.”
+        </div>
+      </div>
+    </section>
+
+    <section id="family-tree">
+      <h2>Family Index</h2>
+      <div class="family-tree">
+        <div class="tree-label">Founders</div>
+        <div class="tree-level">
+          <div class="tree-person"><strong>Gary Paul Zahner</strong></div>
+          <div class="tree-person"><strong>Brenda Joyce Downing Zahner</strong></div>
+        </div>
+
+        <div class="tree-label">Children</div>
+        <div class="tree-level">
+          <div class="tree-person">Rachel Virginia Zahner Blackwell</div>
+          <div class="tree-person">Aaron Paul Zahner</div>
+          <div class="tree-person">Nicholas “Nik” Zahner</div>
+        </div>
+
+        <div class="tree-label">Grandchildren</div>
+        <div class="tree-level">
+          <div class="tree-person">Emily Renee Zahner</div>
+          <div class="tree-person">Allison Celeste Zahner</div>
+          <div class="tree-person">Jackson Zahner</div>
+          <div class="tree-person">Jordan Esquivel</div>
+          <div class="tree-person">Grace Rose Zahner Wright</div>
+          <div class="tree-person">Zachary “Zak” Zahner</div>
+        </div>
+
+        <div class="tree-label">Spouses</div>
+        <div class="tree-level">
+          <div class="tree-person">Brad Blackwell</div>
+          <div class="tree-person">Jeanine Hart</div>
+          <div class="tree-person">Angie Esquivel</div>
+          <div class="tree-person">Mary Beth Wahl</div>
+          <div class="tree-person">Carson Wright</div>
+        </div>
+
+        <div class="tree-label">Great-Grandchildren</div>
+        <div class="tree-level">
+          <div class="tree-person">Bubba Wright<br><small>Born November 2025</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gary-brenda">
+      <h2>Gary &amp; Brenda</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="photo" style="--photo:url('images/gary-zahner.jpg')">
+            <span>Add photo: images/gary-zahner.jpg</span>
+          </div>
+          <div class="card-body">
+            <h3 class="person-title">Gary Paul Zahner</h3>
+            <div class="role">Artist • Craftsman • Woodworker • Father • Grandfather</div>
+            <p>
+              Gary's working life was shaped by creativity and craftsmanship. In retirement,
+              woodworking became one of the clearest ways he expressed love for his family.
+              His workshop produced keepsake boxes, birdhouses, mosaic designs, and
+              personalized Christmas presents made by hand.
+            </p>
+            <div class="tag-list">
+              <span class="tag">Gary's Workshop</span>
+              <span class="tag">Handmade Gifts</span>
+              <span class="tag">Woodworking</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="photo" style="--photo:url('images/brenda-zahner.jpg')">
+            <span>Add photo: images/brenda-zahner.jpg</span>
+          </div>
+          <div class="card-body">
+            <h3 class="person-title">Brenda Joyce Downing Zahner</h3>
+            <div class="role">Mother • Grandmother • Human Resources • Retail Management</div>
+            <p>
+              Brenda was intelligent, hardworking, loving, and often the life of the party.
+              She worked in Human Resources at Presbyterian Hospital in Oklahoma City and
+              for 7-Eleven, managed men's clothing stores, and later worked with an estate
+              sale company. Her family remembers how she made ordinary days fun.
+            </p>
+            <div class="tag-list">
+              <span class="tag">Family Joy</span>
+              <span class="tag">Laundry Dance Parties</span>
+              <span class="tag">Life of the Party</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="children">
+      <h2>Their Children</h2>
+      <div class="grid">
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Rachel Virginia Zahner Blackwell</h3>
+            <p>Married to Brad Blackwell. Their household continues in Family Batch 1 with Brody and Vance Blackwell.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Aaron Paul Zahner</h3>
+            <p>Father of Emily, Allison, Jackson, and Jordan.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Nicholas “Nik” Zahner</h3>
+            <p>Father of Grace and Zachary “Zak” Zahner.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="grandchildren">
+      <h2>Grandchildren</h2>
+      <div class="grid">
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Emily Renee Zahner</h3>
+            <p>Creative work includes macramé, glassblowing, and other artistic pursuits.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Allison Celeste Zahner</h3>
+            <p>
+              Earned a University of Central Missouri degree in Aviation Management with a
+              concentration in Airport and Flight Line Management. She holds a private pilot
+              license, an instrument rating, and an MBA.
+            </p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Jackson Zahner</h3>
+            <p>His page preserves family celebrations, Christmas memories, and outings as his story continues to grow.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Jordan Esquivel</h3>
+            <p class="placeholder-note">No photograph is currently available. This page can be expanded as memories and photos are added.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Grace Rose Zahner Wright</h3>
+            <p>Married to Carson Wright and mother of Bubba Wright.</p>
+          </div>
+        </article>
+
+        <article class="card third">
+          <div class="card-body">
+            <h3 class="person-title">Zachary “Zak” Zahner</h3>
+            <p>His page preserves family memories, humor, and traditions without adding unconfirmed details.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="spouses">
+      <h2>Spouses</h2>
+      <div class="grid">
+        <article class="card third"><div class="card-body"><h3 class="person-title">Jeanine Hart</h3><p class="placeholder-note">No photograph is currently available. Biography can be expanded later.</p></div></article>
+        <article class="card third"><div class="card-body"><h3 class="person-title">Angie Esquivel</h3><p class="placeholder-note">No photograph is currently available. Biography can be expanded later.</p></div></article>
+        <article class="card third"><div class="card-body"><h3 class="person-title">Mary Beth Wahl</h3><p class="placeholder-note">No photograph is currently available. Biography can be expanded later.</p></div></article>
+        <article class="card third"><div class="card-body"><h3 class="person-title">Carson Wright</h3><p class="placeholder-note">No photograph is currently available. Biography can be expanded later.</p></div></article>
+      </div>
+    </section>
+
+    <section id="great-grandchildren">
+      <h2>A New Generation</h2>
+      <article class="card full">
+        <div class="photo" style="--photo:url('images/bubba-wright.jpg')">
+          <span>Add photo: images/bubba-wright.jpg</span>
+        </div>
+        <div class="card-body">
+          <h3 class="person-title">Bubba Wright</h3>
+          <div class="role">Born November 2025</div>
+          <p>
+            Bubba is the beginning of a new generation. His biography is intentionally short
+            because his story has only just begun.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section id="stories">
+      <h2>Featured Family Stories</h2>
+
+      <article class="story">
+        <h3>Brenda's Laundry Day Dance Parties</h3>
+        <p>
+          Laundry day became a family memory when Brenda turned on Cyndi Lauper and made
+          an ordinary household chore feel like a celebration.
+        </p>
+      </article>
+
+      <article class="story">
+        <h3>Gary's Workshop</h3>
+        <p>
+          Retirement gave Gary time to create. His woodworking projects became Christmas
+          presents for the family—personalized gifts that carried the time, patience, and
+          care of the person who made them.
+        </p>
+      </article>
+
+      <article class="story">
+        <h3>A Living Archive</h3>
+        <p>
+          This chapter is complete enough to preserve the family as it is known today,
+          while remaining open to future photographs, stories, documents, and milestones.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>This Is What Happened</strong></p>
+    <p>Family Batch 2 — Gary Paul Zahner &amp; Brenda Joyce Downing Zahner</p>
+  </footer>
+</body>
+</html>
