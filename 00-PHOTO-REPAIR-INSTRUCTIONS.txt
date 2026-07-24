@@ -1,0 +1,17 @@
+PHOTO REPAIR PATCH
+
+This package does not rebuild or redesign the website.
+
+The 127 supplied photographs are embedded directly inside index.html.
+That means GitHub Pages no longer depends on an assets/photos folder to display them.
+
+Upload:
+1. Replace the current index.html with this index.html.
+2. Keep or upload the numbered biography HTML pages included here.
+3. The existing assets folder may remain, but it is no longer required for the Album or Archive photographs.
+
+Expected result:
+- Album shows visible thumbnails.
+- Archive > Photographs shows visible thumbnails.
+- Tapping a photograph opens the larger image.
+- No approval is required.
