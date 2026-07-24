@@ -166,6 +166,33 @@ button{-webkit-tap-highlight-color:transparent}
 .save-status{margin-top:10px;color:#d7ba84}
 @media(min-width:900px){.discovery-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.field.wide{grid-column:1/-1}}
 
+
+.collection-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.filter-btn{border:1px solid var(--line);border-radius:999px;background:#120d09;color:#d7c6a7;padding:9px 12px;font-size:14px}
+.filter-btn.active{background:var(--gold);color:#17110d;font-weight:700}
+.record-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.record-card{width:100%;text-align:left;background:var(--panel);color:var(--cream);border:1px solid var(--line);border-radius:16px;padding:16px}
+button.record-card{cursor:pointer}
+.record-card h3{font-size:27px;font-weight:400;margin:3px 0 7px}
+.record-card p{margin:5px 0;color:#c8b99e;line-height:1.4}
+.record-card small{color:var(--gold2);font:700 10px system-ui;text-transform:uppercase;letter-spacing:.07em}
+.record-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:11px;margin-bottom:10px;background:#0d0907}
+.detail-panel{margin-top:15px;background:#130e0a;border:1px solid var(--gold);border-radius:16px;padding:18px}
+.detail-panel h3{font-size:32px;font-weight:400;margin:0 0 8px}
+.detail-panel p{color:#cdbda2;line-height:1.45}
+.detail-section{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.inline-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.empty-collection{border:1px dashed var(--line);border-radius:16px;padding:24px;text-align:center;color:#bdad91}
+.person-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.person-link{border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:#dbc49a}
+.audio-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.archive-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.archive-section-btn{background:var(--panel);border:1px solid var(--line);border-radius:15px;color:var(--cream);padding:18px;text-align:left}
+.archive-section-btn strong{font:400 25px Georgia,serif;display:block}
+.archive-section-btn span{color:#bdad91}
+@media(min-width:760px){.record-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1050px){.record-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  integrity="sha256-p4NxAoJBhIINfQ3ynhZkWgF/MZbMZr9Y50jIF9eQyqk=" crossorigin="">
@@ -238,6 +265,14 @@ const archiveData={
       google:"https://www.google.com/maps/search/?api=1&query=Springfield%2C%20Missouri"
     }
   ],
+  livelihoods:[
+    {id:"air",title:"In the Air",category:"Aviation",family:"Zahner",details:"Pilots, licenses, aircraft, airfields, uniforms, and memories.",people:[]},
+    {id:"mining",title:"Beneath the Ground",category:"Mining",family:"Zahner",details:"Lamps, maps, tools, company towns, payrolls, and movement.",people:[]},
+    {id:"land",title:"The Land",category:"Farming",family:"All families",details:"Deeds, acreage, crops, livestock, weather, and daily work.",people:[]},
+    {id:"labor",title:"Factory & Labor",category:"Factory and labor",family:"Downing",details:"Machinery, factory buildings, work clothes, neighborhoods, and routines.",people:[]},
+    {id:"public",title:"Pulpit & Public Life",category:"Faith and public life",family:"Blackwell",details:"Churches, sermons, campaigns, notices, meetings, and local influence.",people:[]},
+    {id:"barber",title:"The Barber Chair",category:"Barbering",family:"Barrett",details:"Bill Barrett’s shop, tools, customers, business records, and memories.",people:["Bill Barrett"]}
+  ],
   mysteries:[
     "Unidentified photographs",
     "Unresolved family locations",
@@ -282,19 +317,12 @@ const mapMarkup=`
   <aside class="map-records" id="mapRecords"></aside>
 </div>`;
 const rooms={
-families:{k:"Family Assembly",t:"Four family lines",i:"Balanced introductions—people first, records second.",c:`<div class="family-grid"><article class="panel family-panel" data-family="Zahner"><small>Zahner</small><h3>Baden origins and American chapters</h3><p>Mining, farming, aviation, movement, and family enterprise.</p></article><article class="panel family-panel" data-family="Downing"><small>Downing</small><h3>Working lives and communities</h3><p>Factory workers, farmers, laborers, households, and practical family life.</p></article><article class="panel family-panel" data-family="Blackwell"><small>Blackwell</small><h3>Faith, land, and public life</h3><p>Preachers, public figures, farming, property, influence, and carefully researched history.</p></article><article class="panel family-panel" data-family="Barrett"><small>Barrett</small><h3>Trades, businesses, and relationships</h3><p>Including Bill Barrett’s decades behind the barber chair.</p></article></div>`},
+families:{k:"Family Assembly",t:"Four family lines",i:"Select a family to see its people, places, photographs, stories, sources, and open questions.",c:`<div id="familiesApp"></div>`},
 wanderings:{k:"Wanderings",t:"The family atlas",i:"Documented places, family leads, and locations still waiting to be identified.",c:mapMarkup},
-album:{k:"Album",t:"Photographs and objects",i:"A visual collection designed for identification, context, and family contribution.",c:`<div class="photo-grid">${["Zahner portraits","Downing households","Blackwell photographs","Barrett family album","Unidentified people","Workplaces and tools","Homes and property","Documents and keepsakes"].map(x=>`<article class="photo-card"><span>${x}<br><small>Photographs will appear here</small></span></article>`).join("")}</div>`},
-livelihoods:{k:"Lives & Livelihoods",t:"The images come from the lives",i:"Occupations guide the visual language without defining an entire family.",c:`<div class="livelihood-grid">${[["In the Air","Zahner pilots through licenses, aircraft, airfields, uniforms, and memories."],["Beneath the Ground","Mining through lamps, maps, tools, company towns, payrolls, and movement."],["The Land","Farming across all four lines through deeds, acreage, crops, livestock, and weather."],["Factory & Labor","Machinery, factory buildings, work clothes, neighborhoods, and routines."],["Pulpit & Public Life","Churches, sermons, campaigns, notices, meetings, and local influence."],["The Barber Chair","Bill Barrett’s shop through chairs, razors, signs, customers, and memory."]].map(x=>`<article class="panel"><h3>${x[0]}</h3><p>${x[1]}</p></article>`).join("")}</div>`},
-stories:{k:"Narrated Stories",t:"Read it. Hear it remembered.",i:"Stories keep fact, memory, interpretation, and open questions visibly distinct.",c:`<div class="story-grid"><article class="panel"><small>Draft story · Zahner</small><h3>Three days in October</h3><p>A child, a parish register, and the beginning of a trail through Baden.</p><span class="tag">Documented fact</span></article><article class="panel"><small>Narrator Studio</small><h3>Preserve a relative’s voice</h3><p>Future chapters can pair written stories with family recordings.</p></article><article class="panel"><small>Story Builder</small><h3>Evidence before interpretation</h3><p>Records, memories, interpretation, contradictions, and unanswered questions stay separate.</p></article></div>`},
-archive:{k:"Archive & Junk Drawer",t:"Everything preserved",i:"Counts below come only from records currently loaded into this public build.",c:`<div class="searchbar"><input id="archiveSearch" placeholder="Search the archive"></div><div class="archive-grid">${[
-["People",`${archiveData.people.length} named entries loaded`],
-["Sources",`${archiveData.sources.length} source record loaded`],
-["Photographs",`${archiveData.photos.length} photographs loaded`],
-["Places",`${archiveData.places.length} map records loaded`],
-["Stories",`${archiveData.stories.length} story draft loaded`],
-["Mysteries",`${archiveData.mysteries.length} open mystery groups`]
-].map(x=>`<article class="panel archive-item"><h3>${x[0]}</h3><p>${x[1]}</p></article>`).join("")}</div>`},
+album:{k:"Album",t:"Photographs and objects",i:"Select a family or collection, open an image, and see every connected person, place, story, and source.",c:`<div id="albumApp"></div>`},
+livelihoods:{k:"Lives & Livelihoods",t:"The images come from the lives",i:"Select a livelihood to see the people, records, places, photographs, and stories connected to it.",c:`<div id="livelihoodsApp"></div>`},
+stories:{k:"Narrated Stories",t:"Read it. Hear it remembered.",i:"Select a story to read it, hear browser narration, and review its evidence and connected records.",c:`<div id="storiesApp"></div>`},
+archive:{k:"Archive & Junk Drawer",t:"Everything preserved",i:"Search the entire archive or open a collection to inspect its records.",c:`<div id="archiveApp"></div>`},
 discovery:{k:"Research Desk",t:"Add a discovery",i:"Enter information once, review its evidence status, and publish it into every relevant area of this archive.",c:`<div class="discovery-layout">
 <section class="discovery-form">
 <h3>New discovery</h3>
@@ -403,23 +431,23 @@ function renderReviewQueue(){
 function publishDiscovery(id){
   const s=submissions.find(x=>x.id===id);if(!s)return;
   if(s.type==="person"){
-    archiveData.people.push({name:s.title,family:s.family,generation:null,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source});
+    archiveData.people.push({id:s.id,name:s.title,family:s.family,generation:null,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source,category:s.category,occupation:s.category,image:s.image});
   }
   if(s.type==="photo"){
-    archiveData.photos.push({title:s.title,family:s.family,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source,image:s.image});
+    archiveData.photos.push({id:s.id,title:s.title,family:s.family,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source,image:s.image,category:s.category});
   }
   if(s.type==="place"){
-    archiveData.places.push({id:s.id,name:s.place||s.title,family:s.family,lat:0,lng:0,year:s.year,status:s.status,event:s.title,evidence:s.details,google:s.place?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.place)}`:""});
+    archiveData.places.push({id:s.id,name:s.place||s.title,family:s.family,lat:null,lng:null,year:s.year,status:s.status,event:s.title,evidence:s.details,category:s.category,google:s.place?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.place)}`:""});
   }
   if(s.type==="story"){
-    archiveData.stories.push({title:s.title,family:s.family,status:s.status,date:s.date,details:s.details,source:s.source,image:s.image});
+    archiveData.stories.push({id:s.id,title:s.title,family:s.family,status:s.status,date:s.date,details:s.details,source:s.source,image:s.image,category:s.category,place:s.place});
   }
   if(s.type==="source"){
-    archiveData.sources.push({title:s.title,family:s.family,date:s.date,details:s.details,status:s.status,source:s.source,image:s.image});
+    archiveData.sources.push({id:s.id,title:s.title,family:s.family,date:s.date,details:s.details,status:s.status,source:s.source,image:s.image,category:s.category,place:s.place});
   }
   if(s.type==="livelihood"){
     if(!archiveData.livelihoods)archiveData.livelihoods=[];
-    archiveData.livelihoods.push({title:s.title,family:s.family,category:s.category,details:s.details,date:s.date,place:s.place,status:s.status});
+    archiveData.livelihoods.push({id:s.id,title:s.title,family:s.family,category:s.category||s.title,details:s.details,date:s.date,place:s.place,status:s.status,people:[]});
   }
   if(s.type==="mystery")archiveData.mysteries.push(s.title+(s.details?": "+s.details:""));
   s.reviewStatus="Published";
@@ -455,6 +483,142 @@ function initDiscoveryDesk(){
   document.getElementById("importArchive").onchange=e=>{if(e.target.files[0])importArchive(e.target.files[0])};
 }
 loadLocalArchive();
+
+
+function addDiscoveryFor(type,family="",category=""){
+  openRoom("discovery");
+  setTimeout(()=>{
+    const t=document.getElementById("dType"),f=document.getElementById("dFamily"),c=document.getElementById("dCategory");
+    if(t)t.value=type;if(f&&family&&archiveData.families.includes(family))f.value=family;if(c&&category)c.value=category;
+  },80);
+}
+function familyRecords(family){
+  return {
+    people:archiveData.people.filter(x=>x.family===family),
+    photos:archiveData.photos.filter(x=>x.family===family),
+    places:archiveData.places.filter(x=>x.family===family),
+    stories:archiveData.stories.filter(x=>x.family===family),
+    sources:archiveData.sources.filter(x=>x.family===family),
+    livelihoods:(archiveData.livelihoods||[]).filter(x=>x.family===family||x.family==="All families")
+  };
+}
+function familySummary(f){
+  return {
+    Zahner:["Baden origins and American chapters","Mining, farming, aviation, movement, and family enterprise."],
+    Downing:["Working lives and communities","Factory workers, farmers, laborers, households, and practical family life."],
+    Blackwell:["Faith, land, and public life","Preachers, public figures, farming, property, influence, and carefully researched history."],
+    Barrett:["Trades, businesses, and relationships","Business, farming, family relationships, and Bill Barrett’s decades behind the barber chair."]
+  }[f];
+}
+function initFamilies(){
+  const app=document.getElementById("familiesApp");if(!app)return;
+  app.innerHTML=`<div class="record-grid">${archiveData.families.map(f=>{
+    const r=familyRecords(f),s=familySummary(f);
+    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p><p>${r.people.length} people · ${r.photos.length} photos · ${r.places.length} places · ${r.stories.length} stories</p></button>`
+  }).join("")}</div><div id="familyDetail"></div>`;
+}
+function showFamily(f){
+  const r=familyRecords(f),s=familySummary(f),box=document.getElementById("familyDetail");
+  box.innerHTML=`<section class="detail-panel"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p>
+  <div class="detail-section"><strong>People</strong><div class="person-links">${r.people.length?r.people.map(p=>`<span class="person-link">${safeText(p.name)}</span>`).join(""):"No people loaded yet."}</div></div>
+  <div class="detail-section"><strong>Connected archive</strong><p>${r.photos.length} photographs · ${r.places.length} places · ${r.sources.length} sources · ${r.stories.length} stories · ${r.livelihoods.length} livelihood collections</p></div>
+  <div class="inline-actions"><button class="action-btn primary" onclick="addDiscoveryFor('person','${f}')">Add family member</button><button class="action-btn" onclick="addDiscoveryFor('photo','${f}')">Add photograph</button><button class="action-btn" onclick="addDiscoveryFor('story','${f}')">Add story</button><button class="action-btn" onclick="openRoom('wanderings')">View places</button></div></section>`;
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function initAlbum(){
+  const app=document.getElementById("albumApp");if(!app)return;
+  app.innerHTML=`<div class="collection-toolbar"><button class="filter-btn active" data-af="All">All</button>${archiveData.families.map(f=>`<button class="filter-btn" data-af="${f}">${f}</button>`).join("")}<button class="filter-btn" data-af="Unidentified">Unidentified</button></div><div id="photoGrid"></div><div id="photoDetail"></div>`;
+  app.querySelectorAll("[data-af]").forEach(b=>b.onclick=()=>{app.querySelectorAll("[data-af]").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderPhotos(b.dataset.af)});
+  renderPhotos("All");
+}
+function renderPhotos(filter){
+  let items=archiveData.photos.slice();
+  if(filter!=="All")items=filter==="Unidentified"?items.filter(x=>!x.family):items.filter(x=>x.family===filter);
+  const grid=document.getElementById("photoGrid");
+  grid.innerHTML=items.length?`<div class="record-grid">${items.map((p,i)=>`<button class="record-card" onclick="showPhoto('${safeText(p.id||("p"+i))}',${archiveData.photos.indexOf(p)})">${p.image?`<img src="${p.image}" alt="">`:""}<small>${safeText(p.family||"Unidentified")}</small><h3>${safeText(p.title)}</h3><p>${safeText(p.date||"Date unknown")}${p.place?" · "+safeText(p.place):""}</p></button>`).join("")}</div>`:`<div class="empty-collection">No photographs are loaded in this collection yet.<div class="inline-actions" style="justify-content:center"><button class="action-btn primary" onclick="addDiscoveryFor('photo','${filter==="All"||filter==="Unidentified"?"":filter}')">Add a photograph</button></div></div>`;
+}
+function showPhoto(id,index){
+  const p=archiveData.photos[index],box=document.getElementById("photoDetail");if(!p||!box)return;
+  box.innerHTML=`<section class="detail-panel">${p.image?`<img class="preview-image" src="${p.image}" alt="">`:""}<small>${safeText(p.status||"Unreviewed")}</small><h3>${safeText(p.title)}</h3><p>${safeText(p.details||"No description yet.")}</p><div class="detail-section"><strong>Connections</strong><p>${safeText(p.family||"Family not identified")} · ${safeText(p.date||"Date unknown")} · ${safeText(p.place||"Place unknown")}</p></div><div class="detail-section"><strong>Source</strong><p>${safeText(p.source||"Not recorded")}</p></div><div class="inline-actions"><button class="action-btn" onclick="addDiscoveryFor('story','${safeText(p.family||"")}')">Add related story</button><button class="action-btn" onclick="addDiscoveryFor('source','${safeText(p.family||"")}')">Add source</button></div></section>`;
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function livelihoodRelated(l){
+  const cat=(l.category||"").toLowerCase();
+  const people=archiveData.people.filter(p=>(p.category||p.occupation||"").toLowerCase().includes(cat)||l.people?.includes(p.name));
+  const photos=archiveData.photos.filter(p=>(p.category||"").toLowerCase().includes(cat));
+  const stories=archiveData.stories.filter(p=>(p.category||"").toLowerCase().includes(cat));
+  const places=archiveData.places.filter(p=>(p.category||"").toLowerCase().includes(cat));
+  const sources=archiveData.sources.filter(p=>(p.category||"").toLowerCase().includes(cat));
+  return {people,photos,stories,places,sources};
+}
+function initLivelihoods(){
+  const app=document.getElementById("livelihoodsApp");if(!app)return;
+  app.innerHTML=`<div class="record-grid">${(archiveData.livelihoods||[]).map((l,i)=>`<button class="record-card" onclick="showLivelihood(${i})"><small>${safeText(l.category)}</small><h3>${safeText(l.title)}</h3><p>${safeText(l.details)}</p><p>${safeText(l.family)}</p></button>`).join("")}</div><div id="livelihoodDetail"></div>`;
+}
+function showLivelihood(i){
+  const l=archiveData.livelihoods[i],r=livelihoodRelated(l),box=document.getElementById("livelihoodDetail");if(!l||!box)return;
+  box.innerHTML=`<section class="detail-panel"><small>${safeText(l.category)}</small><h3>${safeText(l.title)}</h3><p>${safeText(l.details)}</p><div class="detail-section"><strong>People</strong><p>${r.people.length?r.people.map(x=>safeText(x.name)).join(", "):"No linked people loaded yet."}</p></div><div class="detail-section"><strong>Connected records</strong><p>${r.photos.length} photographs · ${r.stories.length} stories · ${r.places.length} places · ${r.sources.length} sources</p></div><div class="inline-actions"><button class="action-btn primary" onclick="addDiscoveryFor('livelihood','${l.family==="All families"?"":safeText(l.family)}','${safeText(l.category)}')">Add livelihood discovery</button><button class="action-btn" onclick="addDiscoveryFor('person','${l.family==="All families"?"":safeText(l.family)}','${safeText(l.category)}')">Add a person</button><button class="action-btn" onclick="addDiscoveryFor('photo','${l.family==="All families"?"":safeText(l.family)}','${safeText(l.category)}')">Add photograph</button></div></section>`;
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function initStories(){
+  const app=document.getElementById("storiesApp");if(!app)return;
+  app.innerHTML=`<div class="collection-toolbar"><button class="filter-btn active" data-sf="All">All</button>${archiveData.families.map(f=>`<button class="filter-btn" data-sf="${f}">${f}</button>`).join("")}</div><div id="storyGrid"></div><div id="storyDetail"></div>`;
+  app.querySelectorAll("[data-sf]").forEach(b=>b.onclick=()=>{app.querySelectorAll("[data-sf]").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderStories(b.dataset.sf)});
+  renderStories("All");
+}
+function renderStories(filter){
+  const items=filter==="All"?archiveData.stories:archiveData.stories.filter(x=>x.family===filter),grid=document.getElementById("storyGrid");
+  grid.innerHTML=items.length?`<div class="record-grid">${items.map(s=>`<button class="record-card" onclick="showStory(${archiveData.stories.indexOf(s)})"><small>${safeText(s.family)} · ${safeText(s.status||"Draft")}</small><h3>${safeText(s.title)}</h3><p>${safeText(s.details||"Open this story to read and listen.")}</p></button>`).join("")}</div>`:`<div class="empty-collection">No stories are loaded here yet.<div class="inline-actions" style="justify-content:center"><button class="action-btn primary" onclick="addDiscoveryFor('story','${filter==="All"?"":filter}')">Add a story</button></div></div>`;
+}
+function showStory(i){
+  const s=archiveData.stories[i],box=document.getElementById("storyDetail");if(!s||!box)return;
+  const text=s.details||"This story has a title but its narrative has not been entered yet.";
+  box.innerHTML=`<section class="detail-panel"><small>${safeText(s.family)} · ${safeText(s.status||"Draft")}</small><h3>${safeText(s.title)}</h3><p id="storyNarrative">${safeText(text)}</p><div class="detail-section"><strong>Source and evidence</strong><p>${safeText(s.source||"No source recorded yet.")}</p></div><div class="audio-controls"><button class="action-btn primary" onclick="speakStory(${i})">Listen</button><button class="action-btn" onclick="speechSynthesis.cancel()">Stop</button><button class="action-btn" onclick="addDiscoveryFor('source','${safeText(s.family)}')">Add evidence</button></div></section>`;
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function speakStory(i){
+  if(!("speechSynthesis" in window))return alert("Browser narration is not available on this device.");
+  const s=archiveData.stories[i];speechSynthesis.cancel();const u=new SpeechSynthesisUtterance((s.title+". "+(s.details||"")));u.rate=.9;speechSynthesis.speak(u);
+}
+function archiveCollections(){
+  return [
+    ["people","People",archiveData.people],
+    ["sources","Sources",archiveData.sources],
+    ["photos","Photographs",archiveData.photos],
+    ["places","Places",archiveData.places],
+    ["stories","Stories",archiveData.stories],
+    ["livelihoods","Livelihoods",archiveData.livelihoods||[]],
+    ["mysteries","Mysteries",archiveData.mysteries]
+  ];
+}
+function initArchive(){
+  const app=document.getElementById("archiveApp");if(!app)return;
+  app.innerHTML=`<div class="searchbar"><input id="archiveSearch" placeholder="Search people, places, stories, sources, photographs, and livelihoods"></div><div class="archive-sections">${archiveCollections().map(([k,n,a])=>`<button class="archive-section-btn" onclick="showArchiveCollection('${k}')"><strong>${n}</strong><span>${a.length} loaded</span></button>`).join("")}</div><div id="archiveResults"></div>`;
+  document.getElementById("archiveSearch").oninput=e=>searchArchive(e.target.value);
+}
+function normalizedArchiveRecords(){
+  const rows=[];
+  archiveCollections().forEach(([type,name,arr])=>arr.forEach((x,i)=>{
+    const obj=typeof x==="string"?{title:x}:x;
+    rows.push({type,name,index:i,title:obj.name||obj.title||obj.event||"Untitled",family:obj.family||"",details:obj.details||obj.evidence||obj.source||obj.category||"",raw:obj});
+  }));
+  return rows;
+}
+function searchArchive(q){
+  const box=document.getElementById("archiveResults");q=q.trim().toLowerCase();
+  if(!q){box.innerHTML="";return}
+  const rows=normalizedArchiveRecords().filter(r=>(r.title+" "+r.family+" "+r.details+" "+r.name).toLowerCase().includes(q));
+  box.innerHTML=rows.length?`<div class="record-grid" style="margin-top:14px">${rows.map(r=>`<button class="record-card" onclick="showArchiveRecord('${r.type}',${r.index})"><small>${r.name} · ${safeText(r.family)}</small><h3>${safeText(r.title)}</h3><p>${safeText(r.details)}</p></button>`).join("")}</div>`:`<div class="empty-collection" style="margin-top:14px">No matching records.</div>`;
+}
+function showArchiveCollection(type){
+  const box=document.getElementById("archiveResults"),col=archiveCollections().find(x=>x[0]===type),arr=col[2];
+  box.innerHTML=arr.length?`<div class="record-grid" style="margin-top:14px">${arr.map((x,i)=>{const o=typeof x==="string"?{title:x}:x;return `<button class="record-card" onclick="showArchiveRecord('${type}',${i})"><small>${safeText(o.family||col[1])}</small><h3>${safeText(o.name||o.title||o.event||"Untitled")}</h3><p>${safeText(o.details||o.evidence||o.source||o.category||"")}</p></button>`}).join("")}</div>`:`<div class="empty-collection" style="margin-top:14px">No ${col[1].toLowerCase()} have been loaded yet.<div class="inline-actions" style="justify-content:center"><button class="action-btn primary" onclick="addDiscoveryFor('${type==="photos"?"photo":type==="people"?"person":type==="livelihoods"?"livelihood":type==="mysteries"?"mystery":type.slice(0,-1)}')">Add one</button></div></div>`;
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function showArchiveRecord(type,i){
+  const col=archiveCollections().find(x=>x[0]===type),x=col[2][i],o=typeof x==="string"?{title:x}:x,box=document.getElementById("archiveResults");
+  box.innerHTML=`<section class="detail-panel"><small>${safeText(col[1])} · ${safeText(o.family||"")}</small><h3>${safeText(o.name||o.title||o.event||"Untitled")}</h3>${o.image?`<img class="preview-image" src="${o.image}" alt="">`:""}<p>${safeText(o.details||o.evidence||o.source||o.category||"No additional description.")}</p><div class="detail-section"><strong>Status</strong><p>${safeText(o.status||"Not assigned")}</p></div><div class="inline-actions"><button class="action-btn" onclick="addDiscoveryFor('source','${safeText(o.family||"")}')">Add supporting source</button><button class="action-btn" onclick="initArchive()">Back to archive</button></div></section>`;
+}
 
 let familyMap=null;
 let markerLayer=null;
@@ -497,8 +661,9 @@ function updateFamilyMap(){
   if(!familyMap||!markerLayer)return;
   markerLayer.clearLayers();
   const places=filteredPlaces();
+  const mappable=places.filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lng));
   const bounds=[];
-  places.forEach(p=>{
+  mappable.forEach(p=>{
     const icon=L.divIcon({
       className:"",
       html:`<span style="display:block;width:18px;height:18px;border-radius:50%;background:${markerColor(p.family)};border:3px solid #17110d;box-shadow:0 2px 8px rgba(0,0,0,.45)"></span>`,
@@ -538,14 +703,13 @@ function openRoom(key){
   document.body.style.overflowY="auto";
   history.replaceState(null,"","#"+key);
   window.scrollTo({top:0,behavior:"auto"});
-  if(key==="wanderings") setTimeout(initFamilyMap, 50);
-  if(key==="discovery") setTimeout(initDiscoveryDesk, 50);
-  if(key==="archive"){
-    document.getElementById("archiveSearch").oninput=e=>{
-      const q=e.target.value.toLowerCase();
-      document.querySelectorAll(".archive-item").forEach(i=>i.style.display=i.textContent.toLowerCase().includes(q)?"":"none");
-    };
-  }
+  if(key==="families") setTimeout(initFamilies,50);
+  if(key==="wanderings") setTimeout(initFamilyMap,50);
+  if(key==="album") setTimeout(initAlbum,50);
+  if(key==="livelihoods") setTimeout(initLivelihoods,50);
+  if(key==="stories") setTimeout(initStories,50);
+  if(key==="archive") setTimeout(initArchive,50);
+  if(key==="discovery") setTimeout(initDiscoveryDesk,50);
 }
 document.querySelectorAll("[data-room]").forEach(b=>b.onclick=()=>openRoom(b.dataset.room));
 document.querySelectorAll("[data-family]").forEach(b=>b.onclick=()=>openRoom("families"));
