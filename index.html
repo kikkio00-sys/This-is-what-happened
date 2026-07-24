@@ -538,6 +538,8 @@ function openRoom(key){
   document.body.style.overflowY="auto";
   history.replaceState(null,"","#"+key);
   window.scrollTo({top:0,behavior:"auto"});
+  if(key==="wanderings") setTimeout(initFamilyMap, 50);
+  if(key==="discovery") setTimeout(initDiscoveryDesk, 50);
   if(key==="archive"){
     document.getElementById("archiveSearch").oninput=e=>{
       const q=e.target.value.toLowerCase();
