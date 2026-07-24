@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>This Is What Happened — Version 3.0 Homepage Repair</title>
+<style>
+:root{
+  color-scheme:dark;
+  --cream:#efe1c4;--gold:#c39850;--gold2:#d7b36f;--deep:#080604;
+  --panel:#17110d;--line:rgba(211,171,98,.42);--green:#7aa76d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100svh;padding:max(20px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));
+  background:radial-gradient(circle at 50% 0,rgba(112,74,39,.32),transparent 34%),linear-gradient(180deg,#17100b,#050403);
+  color:var(--cream);font-family:Georgia,"Times New Roman",serif
+}
+main{width:min(100%,640px);margin:auto}
+.mark{width:54px;height:54px;margin:0 auto 12px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:31px}
+h1{font-weight:400;text-align:center;font-size:clamp(30px,8vw,48px);line-height:1;margin:0}
+.kicker{text-align:center;color:var(--gold2);font:700 10px/1.4 system-ui;letter-spacing:.17em;text-transform:uppercase;margin:9px 0 25px}
+.panel{border:1px solid var(--line);border-radius:18px;background:rgba(30,21,15,.92);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+p{line-height:1.55}
+.steps{margin:0 0 20px;padding-left:21px}.steps li{margin:8px 0;line-height:1.45}
+.filebox{display:block;border:1px dashed var(--gold);border-radius:14px;padding:18px;text-align:center;background:#100b08}
+input[type=file]{width:100%;margin-top:12px}
+button{
+  width:100%;margin-top:14px;padding:14px 16px;border:1px solid var(--gold);border-radius:999px;
+  background:linear-gradient(180deg,#5b3a21,#2c1c12);color:var(--cream);font-weight:700
+}
+button:disabled{opacity:.45}
+.status{min-height:52px;margin-top:15px;padding:12px;border-radius:12px;background:#0b0806;border:1px solid rgba(211,171,98,.25);font-family:system-ui;font-size:14px;line-height:1.45}
+.ok{border-color:rgba(122,167,109,.7);color:#d8f0cf}
+.warn{border-color:#b98a4b;color:#f0d7ac}
+.small{font-size:13px;color:#cdbb9d}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#f0cd89}
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">T</div>
+  <h1>This Is What Happened</h1>
+  <div class="kicker">Version 3.0 · Homepage repair</div>
+
+  <section class="panel">
+    <p>This repair makes only the approved homepage changes. It does not remove photographs, biographies, stories, documents, or the existing museum design.</p>
+    <ol class="steps">
+      <li>Select the working <code>index-repair-1A.html</code> file.</li>
+      <li>Tap <strong>Create Version 3.0</strong>.</li>
+      <li>Your phone will create a new file named <code>index.html</code>.</li>
+      <li>Upload that new <code>index.html</code> to the repository root, replacing the current one.</li>
+    </ol>
+
+    <label class="filebox">
+      <strong>Select the working website file</strong>
+      <div class="small">Choose index-repair-1A.html, not an older index file.</div>
+      <input id="sourceFile" type="file" accept=".html,text/html">
+    </label>
+
+    <button id="buildBtn" type="button" disabled>Create Version 3.0</button>
+    <div id="status" class="status">Waiting for the working website file.</div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const sourceFile = document.getElementById("sourceFile");
+  const buildBtn = document.getElementById("buildBtn");
+  const status = document.getElementById("status");
+
+  const mapCSS = `
+/* VERSION 3.0 — APPROVED INTERACTIVE FAMILY MAP */
+.family-map-invitation{
+  width:min(100%,620px);margin:0 auto 9px;padding:0 1px
+}
+.family-map-invitation h2{
+  margin:0 0 6px;text-align:center;color:var(--gold2);
+  font:700 8px/1.25 system-ui;letter-spacing:.15em;text-transform:uppercase
+}
+.family-map-stage{
+  position:relative;min-height:144px;overflow:hidden;
+  border:1px solid var(--line);border-radius:16px;
+  background:
+    radial-gradient(circle at 50% 116%,rgba(195,152,77,.28),transparent 45%),
+    linear-gradient(180deg,#261a11,#0d0907);
+  box-shadow:0 14px 30px rgba(0,0,0,.36)
+}
+.family-map-stage::before{
+  content:"";position:absolute;left:50%;bottom:22px;width:8px;height:58px;
+  transform:translateX(-50%);border-radius:8px;
+  background:linear-gradient(#c39850,#684329);
+  box-shadow:0 0 16px rgba(195,152,77,.22)
+}
+.family-map-stage::after{
+  content:"";position:absolute;left:50%;bottom:70px;width:67%;height:55px;
+  transform:translateX(-50%);
+  border-top:2px solid rgba(215,179,111,.7);border-radius:50% 50% 0 0
+}
+.family-map-choice{
+  position:absolute;z-index:2;min-width:77px;padding:7px 10px;
+  border:1px solid currentColor;border-radius:999px;
+  background:rgba(12,9,7,.88);color:var(--cream);
+  text-align:center;font-size:12px;cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.34)
+}
+.family-map-choice::before{
+  content:"";display:inline-block;width:7px;height:7px;margin-right:6px;
+  border-radius:50%;background:currentColor;vertical-align:1px
+}
+.family-map-choice:hover,.family-map-choice:focus-visible{
+  transform:translateY(-2px);background:#2a1d13;outline:2px solid var(--gold2);outline-offset:2px
+}
+.family-map-choice[data-map-family="Zahner"]{left:4%;top:22px;color:var(--blue)}
+.family-map-choice[data-map-family="Downing"]{left:24%;top:70px;color:var(--green)}
+.family-map-choice[data-map-family="Blackwell"]{right:24%;top:70px;color:var(--red)}
+.family-map-choice[data-map-family="Barrett"]{right:4%;top:22px;color:var(--amber)}
+.family-map-root{
+  position:absolute;z-index:2;left:50%;bottom:8px;transform:translateX(-50%);
+  color:var(--gold2);font:italic 11px Georgia,serif;white-space:nowrap
+}
+@media(max-width:390px){
+  .family-map-stage{min-height:138px}
+  .family-map-choice{min-width:67px;padding:6px 7px;font-size:10px}
+  .family-map-choice[data-map-family="Zahner"]{left:2%}
+  .family-map-choice[data-map-family="Barrett"]{right:2%}
+  .family-map-choice[data-map-family="Downing"]{left:19%}
+  .family-map-choice[data-map-family="Blackwell"]{right:19%}
+}
+/* END VERSION 3.0 */
+`;
+
+  const mapHTML = `
+<section class="family-map-invitation" id="familyMapInvitation" aria-labelledby="familyMapInvitationTitle">
+  <h2 id="familyMapInvitationTitle">Choose a family branch</h2>
+  <div class="family-map-stage" role="group" aria-label="Interactive family map">
+    <button class="family-map-choice" type="button" data-map-family="Zahner">Zahner</button>
+    <button class="family-map-choice" type="button" data-map-family="Downing">Downing</button>
+    <button class="family-map-choice" type="button" data-map-family="Blackwell">Blackwell</button>
+    <button class="family-map-choice" type="button" data-map-family="Barrett">Barrett</button>
+    <span class="family-map-root">One archive · four family lines</span>
+  </div>
+</section>`;
+
+  const mapJS = `
+/* VERSION 3.0 — FAMILY MAP CONTROLS */
+(() => {
+  const originalFamilyButtons = [...document.querySelectorAll(".family-line button")];
+  document.querySelectorAll(".family-map-choice").forEach((mapButton) => {
+    mapButton.addEventListener("click", () => {
+      const family = mapButton.dataset.mapFamily;
+      const original = originalFamilyButtons.find(
+        (button) => button.textContent.trim().toLowerCase() === family.toLowerCase()
+      );
+      if (original) original.click();
+    });
+  });
+})();
+/* END VERSION 3.0 CONTROLS */
+`;
+
+  function replaceRequired(text, pattern, replacement, label) {
+    const before = text;
+    text = text.replace(pattern, replacement);
+    if (text === before) throw new Error("Could not locate " + label + " in the selected file.");
+    return text;
+  }
+
+  function buildVersion(source) {
+    if (!source.includes("<!doctype html") && !source.includes("<!DOCTYPE html")) {
+      throw new Error("The selected file does not appear to be an HTML website file.");
+    }
+    if (!source.includes('class="entrance') || !source.includes('class="family-line"')) {
+      throw new Error("This is not the approved Repair 1A website structure.");
+    }
+
+    let output = source;
+
+    // Remove an earlier Version 3 block if this tool is accidentally run twice.
+    output = output.replace(/\/\* VERSION 3\.0 — APPROVED INTERACTIVE FAMILY MAP \*\/[\s\S]*?\/\* END VERSION 3\.0 \*\//g, "");
+    output = output.replace(/\/\* VERSION 3\.0 — FAMILY MAP CONTROLS \*\/[\s\S]*?\/\* END VERSION 3\.0 CONTROLS \*\//g, "");
+    output = output.replace(/\s*<section class="family-map-invitation"[\s\S]*?<\/section>/g, "");
+
+    // Approved wording only.
+    output = output.replace(/<strong>Family Assembly<\/strong>/g, "<strong>Meet the Family</strong>");
+    output = output.replace(/aria-label="Family Assembly"/g, 'aria-label="Meet the Family"');
+    output = output.replace(/<strong>Album<\/strong>/g, "<strong>Photographs</strong>");
+    output = output.replace(/aria-label="Album"/g, 'aria-label="Photographs"');
+
+    // Insert map styling immediately before the final style close.
+    const lastStyleClose = output.lastIndexOf("</style>");
+    if (lastStyleClose < 0) throw new Error("Could not locate the website style section.");
+    output = output.slice(0, lastStyleClose) + "\n" + mapCSS + "\n" + output.slice(lastStyleClose);
+
+    // Insert map after the four-name selector.
+    const familyNavPattern = /(<nav class="family-line"[\s\S]*?<\/nav>)/;
+    output = replaceRequired(output, familyNavPattern, "$1\n" + mapHTML, "the four-family selector");
+
+    // Insert map behavior before body closes.
+    const bodyClose = output.lastIndexOf("</body>");
+    if (bodyClose < 0) throw new Error("Could not locate the end of the website.");
+    output = output.slice(0, bodyClose) + "\n<script>\n" + mapJS + "\n<\/script>\n" + output.slice(bodyClose);
+
+    // Verification checks.
+    const required = [
+      "Meet the Family",
+      "Photographs",
+      "family-map-invitation",
+      'data-map-family="Zahner"',
+      'data-map-family="Downing"',
+      'data-map-family="Blackwell"',
+      'data-map-family="Barrett"'
+    ];
+    const missing = required.filter(item => !output.includes(item));
+    if (missing.length) throw new Error("Version verification failed: " + missing.join(", "));
+
+    return output;
+  }
+
+  sourceFile.addEventListener("change", () => {
+    const file = sourceFile.files && sourceFile.files[0];
+    buildBtn.disabled = !file;
+    status.className = "status";
+    status.textContent = file
+      ? "Selected: " + file.name + ". Ready to create Version 3.0."
+      : "Waiting for the working website file.";
+  });
+
+  buildBtn.addEventListener("click", async () => {
+    const file = sourceFile.files && sourceFile.files[0];
+    if (!file) return;
+
+    buildBtn.disabled = true;
+    status.className = "status";
+    status.textContent = "Reading and updating the working website…";
+
+    try {
+      const source = await file.text();
+      const output = buildVersion(source);
+      const blob = new Blob([output], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "index.html";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+      status.className = "status ok";
+      status.innerHTML =
+        "<strong>Version 3.0 was created.</strong><br>" +
+        "The new <code>index.html</code> contains Meet the Family, Photographs, and the interactive four-family map.";
+    } catch (error) {
+      console.error(error);
+      status.className = "status warn";
+      status.textContent = error.message || "The repair could not be completed.";
+    } finally {
+      buildBtn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

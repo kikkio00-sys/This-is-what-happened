@@ -1,0 +1,24 @@
+THIS IS WHAT HAPPENED — VERSION 3.0
+
+APPROVED SCOPE
+1. Family Assembly is renamed Meet the Family.
+2. Album is renamed Photographs.
+3. An interactive four-family map is added as the homepage invitation.
+4. Zahner, Downing, Blackwell, and Barrett remain equally presented.
+5. The existing museum design, photographs, archive, biographies, and navigation repair are preserved.
+6. No other redesign or content change is included.
+
+HOW TO USE
+1. Open This_Is_What_Happened_V3_0_Repair.html.
+2. Select the working index-repair-1A.html file.
+3. Tap Create Version 3.0.
+4. A new index.html file will be created.
+5. In GitHub, upload that index.html to the root of:
+   kikkio00-sys/This-is-what-happened
+6. Replace the existing index.html only.
+7. Do not delete numbered biography pages or other files.
+8. Wait for GitHub Pages to publish, then refresh:
+   https://kikkio00-sys.github.io/This-is-what-happened/
+
+ROLLBACK
+The current live index.html remains the restore copy until Version 3.0 is confirmed working.
