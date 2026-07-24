@@ -202,6 +202,32 @@ button.record-card{cursor:pointer}
 .map-loading button{margin-top:12px;border:1px solid #6f542e;border-radius:999px;background:#241810;color:#f0dfbd;padding:10px 14px}
 .map-loading.hidden{display:none}
 
+
+.status-possible{border-color:#b88b46!important;color:#e1bd79!important}
+.status-confirmed{border-color:#6e9f72!important;color:#9fc6a2!important}
+.status-probable{border-color:#8fa66a!important;color:#b8cf8f!important}
+.status-placeholder{border-color:#777!important;color:#bbb!important}
+.tree-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tree-shell{display:grid;gap:12px}
+.generation-block{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--panel)}
+.generation-block h4{font-size:25px;font-weight:400;margin:0 0 10px}
+.person-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding:11px 0}
+.person-row:first-of-type{border-top:0}
+.person-row strong{font-size:19px;font-weight:400}
+.person-row span{display:block;color:#bfae91;font-size:14px;margin-top:3px}
+.evidence-mini{font:700 9px system-ui;text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--line);border-radius:999px;padding:5px 8px;white-space:nowrap}
+.gap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.gap-card{border:1px solid var(--line);border-radius:14px;padding:13px;background:#110c09}
+.gap-card b{font-size:28px;font-weight:400;display:block}
+.gap-card span{color:#bca98b;font-size:13px}
+.relationship-list{display:grid;gap:8px;margin-top:12px}
+.relationship-card{border:1px solid var(--line);border-radius:12px;padding:11px}
+.relationship-card p{margin:3px 0;color:#c7b79c}
+.import-banner{border:1px solid var(--gold);border-radius:16px;padding:15px;margin-bottom:14px;background:#18110c}
+.import-banner h3{font-size:27px;font-weight:400;margin:0 0 6px}
+.import-banner p{margin:4px 0;color:#c8b99f;line-height:1.4}
+@media(min-width:800px){.gap-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  integrity="sha256-p4NxAoJBhIINfQ3ynhZkWgF/MZbMZr9Y50jIF9eQyqk=" crossorigin="">
@@ -289,8 +315,106 @@ const archiveData={
   ]
 };
 
+
+const TREE_IMPORT_VERSION="2026-07-24-v1";
+const treeImportPeople=[
+{id:"p-rachel-zahner",name:"Rachel Virginia Zahner",family:"Zahner",birth:1983,living:true,generation:1,status:"Possible",source:"Family tree screenshot",notes:"Relationship structure imported from user-provided tree image."},
+{id:"p-bradley-blackwell",name:"Bradley Todd Blackwell",family:"Blackwell",birth:1975,living:true,generation:1,status:"Possible",source:"Family tree screenshot"},
+{id:"p-brody-blackwell",name:"Brody Paul Blackwell",family:"Blackwell",birth:2002,living:true,generation:0,status:"Possible",source:"Family tree screenshot"},
+{id:"p-vance-blackwell",name:"Vance Cully Blackwell",family:"Blackwell",birth:2005,living:true,generation:0,status:"Possible",source:"Family tree screenshot"},
+
+{id:"p-gary-zahner",name:"Gary Paul Zahner",family:"Zahner",birth:1953,living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-brenda-downing",name:"Brenda Joyce Downing",family:"Downing",birth:1955,living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-robert-zahner",name:"Robert Donald Zahner",family:"Zahner",birth:1930,death:1989,generation:3,status:"Possible",source:"Family tree screenshot"},
+{id:"p-fern-walker",name:"Fern Elizabeth Walker",family:"Zahner",birth:1930,death:2011,generation:3,status:"Possible",source:"Family tree screenshot"},
+{id:"p-theodore-zahner-1889",name:"Theodore Zahner",family:"Zahner",birth:1889,death:1955,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-hattie-pieper",name:"Hattie Pieper",family:"Zahner",birth:1889,death:1969,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-theodor-paul-zahner",name:"Theodor Paul Zahner Sr.",family:"Zahner",birth:1860,death:1944,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-theresa-egner",name:"Theresa Edith Egner",family:"Zahner",birth:1867,death:1952,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-hermann-pieper",name:"Hermann F. F. Pieper",family:"Zahner",birth:1860,death:1933,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-augusta-stolphman",name:"Augusta Stolphman",family:"Zahner",birth:1860,death:1946,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-rue-walker",name:"Rue Walker",family:"Zahner",birth:1904,death:1988,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-verda-butler",name:"Verda Elizabeth Butler",family:"Zahner",birth:1907,death:1985,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-aaron-walker",name:"Aaron Walker",family:"Zahner",birth:1867,death:1956,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-rosia-schufflebarer",name:"Rosia Ella Schufflebarer",family:"Zahner",birth:1868,death:1943,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-seamon-butler",name:"Seamon Oscar Butler",family:"Zahner",birth:1876,death:1958,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-martha-carter",name:"Martha Isabelle (Belle) Carter",family:"Zahner",birth:1876,death:1947,generation:5,status:"Possible",source:"Family tree screenshot"},
+
+{id:"p-claude-downing",name:"Claude Thomas Downing",family:"Downing",birth:1931,death:1999,generation:3,status:"Possible",source:"Family tree screenshot"},
+{id:"p-hazel-huey",name:"Hazel Virginia Huey",family:"Downing",birth:1930,death:2015,generation:3,status:"Possible",source:"Family tree screenshot"},
+{id:"p-wa-downing",name:"W. A. Downing",family:"Downing",death:1975,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-lena-grady",name:"Lena May Grady",family:"Downing",birth:1904,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-aubry-huey",name:"Aubry Albert Huey",family:"Downing",birth:1902,death:1986,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-lola-griffin",name:"Lola Mai Griffin",family:"Downing",birth:1907,death:1935,generation:4,status:"Possible",source:"Family tree screenshot"},
+{id:"p-melba-downing",name:"Melba Jean Downing",family:"Downing",birth:1952,death:2019,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-buddy-downing",name:"Buddy Joe Downing",family:"Downing",birth:1953,death:1983,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-kathryn-downing",name:"Kathryn Sue Downing",family:"Downing",birth:1955,death:1995,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-gary-downing",name:"Gary Downing",family:"Downing",birth:1962,living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-janice-downing",name:"Janice Downing",family:"Downing",living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-tom-downing",name:"Tom Downing",family:"Downing",living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-patricia-downing",name:"Patricia Downing",family:"Downing",generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-barbara-downing",name:"Barbara Downing",family:"Downing",living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+{id:"p-randell-downing",name:"Randell Downing",family:"Downing",living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
+
+{id:"p-william-barrett-1814",name:"William Barrett",family:"Barrett",birth:1814,death:1865,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-margaret-wingfield",name:"Margaret Elizabeth Wingfield",family:"Barrett",birth:1815,death:1892,generation:5,status:"Possible",source:"Family tree screenshot"},
+{id:"p-william-barrett-older",name:"William Barrett",family:"Barrett",generation:6,status:"Placeholder",source:"Family tree screenshot",notes:"Dates require transcription and documentation."},
+{id:"p-margaret-love",name:"Margaret Love",family:"Barrett",generation:6,status:"Placeholder",source:"Family tree screenshot",notes:"Dates require transcription and documentation."},
+{id:"p-john-barrett",name:"John Barrett",family:"Barrett",generation:7,status:"Placeholder",source:"Family tree screenshot"},
+{id:"p-joan-barrett",name:"Joan",family:"Barrett",generation:7,status:"Placeholder",source:"Family tree screenshot"},
+{id:"p-geoffrey-barrett",name:"Geoffrey Barrett",family:"Barrett",generation:8,status:"Placeholder",source:"Family tree screenshot"},
+{id:"p-lord-john-fitzwilliam",name:"Lord John FitzWilliam",family:"Barrett",generation:9,status:"Placeholder",source:"Family tree screenshot"},
+
+{id:"p-blackwell-parent1",name:"Blackwell parent — name pending transcription",family:"Blackwell",generation:2,status:"Placeholder",source:"Family tree screenshot"},
+{id:"p-blackwell-grandparent1",name:"Blackwell grandparent — name pending transcription",family:"Blackwell",generation:3,status:"Placeholder",source:"Family tree screenshot"},
+{id:"p-blackwell-ggrandparent1",name:"Blackwell great-grandparent — name pending transcription",family:"Blackwell",generation:4,status:"Placeholder",source:"Family tree screenshot"}
+];
+
+const treeImportRelationships=[
+["p-rachel-zahner","p-gary-zahner","child"],["p-rachel-zahner","p-brenda-downing","child"],["p-rachel-zahner","p-bradley-blackwell","spouse"],
+["p-brody-blackwell","p-rachel-zahner","child"],["p-brody-blackwell","p-bradley-blackwell","child"],
+["p-vance-blackwell","p-rachel-zahner","child"],["p-vance-blackwell","p-bradley-blackwell","child"],
+["p-gary-zahner","p-robert-zahner","child"],["p-gary-zahner","p-fern-walker","child"],
+["p-robert-zahner","p-theodore-zahner-1889","child"],["p-robert-zahner","p-hattie-pieper","child"],
+["p-theodore-zahner-1889","p-theodor-paul-zahner","child"],["p-theodore-zahner-1889","p-theresa-egner","child"],
+["p-hattie-pieper","p-hermann-pieper","child"],["p-hattie-pieper","p-augusta-stolphman","child"],
+["p-fern-walker","p-rue-walker","child"],["p-fern-walker","p-verda-butler","child"],
+["p-rue-walker","p-aaron-walker","child"],["p-rue-walker","p-rosia-schufflebarer","child"],
+["p-verda-butler","p-seamon-butler","child"],["p-verda-butler","p-martha-carter","child"],
+
+["p-brenda-downing","p-claude-downing","child"],["p-brenda-downing","p-hazel-huey","child"],
+["p-claude-downing","p-wa-downing","child"],["p-claude-downing","p-lena-grady","child"],
+["p-hazel-huey","p-aubry-huey","child"],["p-hazel-huey","p-lola-griffin","child"],
+["p-melba-downing","p-claude-downing","child"],["p-melba-downing","p-hazel-huey","child"],
+["p-buddy-downing","p-claude-downing","child"],["p-buddy-downing","p-hazel-huey","child"],
+["p-kathryn-downing","p-claude-downing","child"],["p-kathryn-downing","p-hazel-huey","child"],
+["p-gary-downing","p-claude-downing","child"],["p-gary-downing","p-hazel-huey","child"],
+["p-janice-downing","p-claude-downing","child"],["p-janice-downing","p-hazel-huey","child"],
+["p-tom-downing","p-claude-downing","child"],["p-tom-downing","p-hazel-huey","child"],
+["p-patricia-downing","p-claude-downing","child"],["p-patricia-downing","p-hazel-huey","child"],
+["p-barbara-downing","p-claude-downing","child"],["p-barbara-downing","p-hazel-huey","child"],
+["p-randell-downing","p-claude-downing","child"],["p-randell-downing","p-hazel-huey","child"],
+
+["p-william-barrett-1814","p-william-barrett-older","child"],["p-william-barrett-1814","p-margaret-love","child"],
+["p-william-barrett-older","p-john-barrett","child"],["p-william-barrett-older","p-joan-barrett","child"],
+["p-john-barrett","p-geoffrey-barrett","child"],["p-geoffrey-barrett","p-lord-john-fitzwilliam","child"],
+
+["p-bradley-blackwell","p-blackwell-parent1","child"],["p-blackwell-parent1","p-blackwell-grandparent1","child"],
+["p-blackwell-grandparent1","p-blackwell-ggrandparent1","child"]
+].map((r,i)=>({id:"r-"+i,personId:r[0],relatedId:r[1],type:r[2],status:"Possible",source:"Family tree screenshot"}));
+
+function ensureTreeImport(){
+  if(!archiveData.relationships)archiveData.relationships=[];
+  const ids=new Set(archiveData.people.map(p=>p.id));
+  treeImportPeople.forEach(p=>{if(!ids.has(p.id))archiveData.people.push({...p})});
+  const rids=new Set(archiveData.relationships.map(r=>r.id));
+  treeImportRelationships.forEach(r=>{if(!rids.has(r.id))archiveData.relationships.push({...r})});
+  archiveData.treeImportVersion=TREE_IMPORT_VERSION;
+}
+ensureTreeImport();
+
 function archiveCounts(){
-  const generations=new Set(archiveData.people.filter(p=>p.generation).map(p=>p.generation)).size;
+  const generations=new Set(archiveData.people.filter(p=>p.generation!==null&&p.generation!==undefined).map(p=>p.generation)).size;
   return [
     [archiveData.families.length,"Families"],
     [archiveData.people.length,"People"],
@@ -378,7 +502,7 @@ function loadLocalArchive(){
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
     if(saved&&saved.archiveData){
-      Object.keys(archiveData).forEach(k=>{if(Array.isArray(saved.archiveData[k]))archiveData[k]=saved.archiveData[k]});
+      Object.keys(saved.archiveData||{}).forEach(k=>{if(Array.isArray(saved.archiveData[k]))archiveData[k]=saved.archiveData[k]}); ensureTreeImport();
       submissions=Array.isArray(saved.submissions)?saved.submissions:[];
     }
   }catch(e){console.warn("Could not load local archive",e)}
@@ -448,7 +572,7 @@ function renderReviewQueue(){
 function publishDiscovery(id){
   const s=submissions.find(x=>x.id===id);if(!s)return;
   if(s.type==="person"){
-    archiveData.people.push({id:s.id,name:s.title,family:s.family,generation:null,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source,category:s.category,occupation:s.category,image:s.image});
+    archiveData.people.push({id:s.id,name:s.title,family:s.family,generation:null,date:s.date,place:s.place,details:s.details,status:s.status==="Documented fact"?"Confirmed":"Possible",source:s.source,category:s.category,occupation:s.category,image:s.image});
   }
   if(s.type==="photo"){
     archiveData.photos.push({id:s.id,title:s.title,family:s.family,date:s.date,place:s.place,details:s.details,status:s.status,source:s.source,image:s.image,category:s.category});
@@ -486,7 +610,7 @@ function importArchive(file){
   reader.onload=()=>{
     try{
       const data=JSON.parse(reader.result);
-      if(data.archiveData){Object.keys(archiveData).forEach(k=>{if(Array.isArray(data.archiveData[k]))archiveData[k]=data.archiveData[k]})}
+      if(data.archiveData){Object.keys(data.archiveData||{}).forEach(k=>{if(Array.isArray(data.archiveData[k]))archiveData[k]=data.archiveData[k]}); ensureTreeImport()}
       submissions=Array.isArray(data.submissions)?data.submissions:[];
       saveLocalArchive();renderReviewQueue();document.getElementById("saveStatus").textContent="Backup imported.";
     }catch(e){document.getElementById("saveStatus").textContent="That file could not be imported."}
@@ -499,7 +623,7 @@ function initDiscoveryDesk(){
   document.getElementById("exportArchive").onclick=exportArchive;
   document.getElementById("importArchive").onchange=e=>{if(e.target.files[0])importArchive(e.target.files[0])};
 }
-loadLocalArchive();
+loadLocalArchive(); saveLocalArchive();
 
 
 function addDiscoveryFor(type,family="",category=""){
@@ -527,19 +651,52 @@ function familySummary(f){
     Barrett:["Trades, businesses, and relationships","Business, farming, family relationships, and Bill Barrett’s decades behind the barber chair."]
   }[f];
 }
+function lifespan(p){
+  if(p.living)return `${p.birth||"Year unknown"}–Living`;
+  if(p.birth||p.death)return `${p.birth||"?"}–${p.death||"?"}`;
+  return "Dates not yet transcribed";
+}
+function statusClass(s){return "status-"+String(s||"Possible").toLowerCase().replace(/\s+/g,"-")}
+function familyPeople(f){return archiveData.people.filter(p=>p.family===f).sort((a,b)=>(b.generation??-99)-(a.generation??-99)||(a.birth||9999)-(b.birth||9999))}
+function familyRelationships(f){
+  const ids=new Set(familyPeople(f).map(p=>p.id));
+  return (archiveData.relationships||[]).filter(r=>ids.has(r.personId)||ids.has(r.relatedId));
+}
+function gapStats(f){
+  const people=familyPeople(f), rels=familyRelationships(f);
+  return {
+    people:people.length,
+    generations:new Set(people.map(p=>p.generation).filter(x=>x!==null&&x!==undefined)).size,
+    placeholders:people.filter(p=>p.status==="Placeholder").length,
+    unconfirmed:people.filter(p=>p.status!=="Confirmed").length,
+    missingBirth:people.filter(p=>!p.birth).length,
+    missingDeath:people.filter(p=>!p.living&&!p.death).length,
+    relationships:rels.length,
+    unconfirmedRelationships:rels.filter(r=>r.status!=="Confirmed").length
+  };
+}
 function initFamilies(){
   const app=document.getElementById("familiesApp");if(!app)return;
-  app.innerHTML=`<div class="record-grid">${archiveData.families.map(f=>{
-    const r=familyRecords(f),s=familySummary(f);
-    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p><p>${r.people.length} people · ${r.photos.length} photos · ${r.places.length} places · ${r.stories.length} stories</p></button>`
+  app.innerHTML=`<div class="import-banner"><h3>Working tree imported</h3><p>The names and relationships taken from the screenshots are starting points only. Every imported connection is marked Possible or Placeholder until supporting records are attached.</p></div>
+  <div class="record-grid">${archiveData.families.map(f=>{
+    const r=familyRecords(f),s=familySummary(f),g=gapStats(f);
+    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
   }).join("")}</div><div id="familyDetail"></div>`;
 }
 function showFamily(f){
-  const r=familyRecords(f),s=familySummary(f),box=document.getElementById("familyDetail");
+  const people=familyPeople(f),rels=familyRelationships(f),g=gapStats(f),s=familySummary(f),box=document.getElementById("familyDetail");
+  const generations=[...new Set(people.map(p=>p.generation).filter(x=>x!==null&&x!==undefined))].sort((a,b)=>b-a);
   box.innerHTML=`<section class="detail-panel"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p>
-  <div class="detail-section"><strong>People</strong><div class="person-links">${r.people.length?r.people.map(p=>`<span class="person-link">${safeText(p.name)}</span>`).join(""):"No people loaded yet."}</div></div>
-  <div class="detail-section"><strong>Connected archive</strong><p>${r.photos.length} photographs · ${r.places.length} places · ${r.sources.length} sources · ${r.stories.length} stories · ${r.livelihoods.length} livelihood collections</p></div>
-  <div class="inline-actions"><button class="action-btn primary" onclick="addDiscoveryFor('person','${f}')">Add family member</button><button class="action-btn" onclick="addDiscoveryFor('photo','${f}')">Add photograph</button><button class="action-btn" onclick="addDiscoveryFor('story','${f}')">Add story</button><button class="action-btn" onclick="openRoom('wanderings')">View places</button></div></section>`;
+  <div class="gap-grid">
+   <div class="gap-card"><b>${g.people}</b><span>people imported</span></div>
+   <div class="gap-card"><b>${g.generations}</b><span>generations represented</span></div>
+   <div class="gap-card"><b>${g.missingBirth}</b><span>birth years missing</span></div>
+   <div class="gap-card"><b>${g.unconfirmedRelationships}</b><span>relationships to prove</span></div>
+  </div>
+  <div class="tree-toolbar"><button class="action-btn primary" onclick="addDiscoveryFor('person','${f}')">Add family member</button><button class="action-btn" onclick="addDiscoveryFor('source','${f}')">Add evidence</button><button class="action-btn" onclick="addDiscoveryFor('photo','${f}')">Add photograph</button></div>
+  <div class="tree-shell">${generations.map(gen=>`<div class="generation-block"><h4>Generation ${gen}</h4>${people.filter(p=>p.generation===gen).map(p=>`<div class="person-row"><div><strong>${safeText(p.name)}</strong><span>${lifespan(p)} · ${safeText(p.source||"No source")}</span></div><span class="evidence-mini ${statusClass(p.status)}">${safeText(p.status||"Possible")}</span></div>`).join("")}</div>`).join("")}</div>
+  <div class="detail-section"><strong>Imported relationships</strong><div class="relationship-list">${rels.slice(0,80).map(r=>{const a=archiveData.people.find(p=>p.id===r.personId),b=archiveData.people.find(p=>p.id===r.relatedId);return `<div class="relationship-card"><p><strong>${safeText(a?.name||"Unknown")}</strong> is listed as child of <strong>${safeText(b?.name||"Unknown")}</strong></p><span class="evidence-mini ${statusClass(r.status)}">${safeText(r.status)}</span></div>`}).join("")||"No relationships loaded."}</div></div>
+  </section>`;
   box.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function initAlbum(){
@@ -605,6 +762,7 @@ function archiveCollections(){
     ["places","Places",archiveData.places],
     ["stories","Stories",archiveData.stories],
     ["livelihoods","Livelihoods",archiveData.livelihoods||[]],
+    ["relationships","Relationships",archiveData.relationships||[]],
     ["mysteries","Mysteries",archiveData.mysteries]
   ];
 }
@@ -617,7 +775,10 @@ function normalizedArchiveRecords(){
   const rows=[];
   archiveCollections().forEach(([type,name,arr])=>arr.forEach((x,i)=>{
     const obj=typeof x==="string"?{title:x}:x;
-    rows.push({type,name,index:i,title:obj.name||obj.title||obj.event||"Untitled",family:obj.family||"",details:obj.details||obj.evidence||obj.source||obj.category||"",raw:obj});
+    let title=obj.name||obj.title||obj.event||"Untitled";
+    let details=obj.details||obj.evidence||obj.source||obj.category||"";
+    if(type==="relationships"){const a=archiveData.people.find(p=>p.id===obj.personId),b=archiveData.people.find(p=>p.id===obj.relatedId);title=`${a?.name||"Unknown"} → ${b?.name||"Unknown"}`;details=`${obj.type||"relationship"} · ${obj.status||"Possible"}`;}
+    rows.push({type,name,index:i,title,family:obj.family||"",details,raw:obj});
   }));
   return rows;
 }
