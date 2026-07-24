@@ -228,6 +228,26 @@ button.record-card{cursor:pointer}
 .import-banner p{margin:4px 0;color:#c8b99f;line-height:1.4}
 @media(min-width:800px){.gap-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
+
+/* Family-unit chapter */
+.family-unit-hero{margin:0 0 18px;padding:clamp(20px,5vw,42px);border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(91,54,31,.92),rgba(28,18,12,.96));box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.family-unit-hero small{font:700 10px system-ui;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}
+.family-unit-hero h3{font-size:clamp(30px,7vw,58px);font-weight:400;margin:.35rem 0 .75rem;line-height:1}
+.family-unit-hero p{max-width:850px;font-size:clamp(16px,2.5vw,20px);line-height:1.65;margin:.5rem 0}
+.family-unit-status{display:inline-flex;gap:8px;align-items:center;margin-top:12px;padding:8px 12px;border:1px solid rgba(215,179,111,.55);border-radius:999px;color:#f0d5a1;font:700 10px system-ui;letter-spacing:.08em;text-transform:uppercase}
+.unit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.unit-card,.unit-section{border:1px solid var(--line);border-radius:18px;background:rgba(26,18,13,.96);padding:18px}
+.unit-card h4,.unit-section h4{font-size:24px;font-weight:400;margin:.2rem 0 .5rem}.unit-card p,.unit-section p{line-height:1.6;color:#dfcdb0}
+.unit-card .role{color:var(--gold2);font:700 10px system-ui;letter-spacing:.12em;text-transform:uppercase}
+.unit-card details{margin-top:12px;border-top:1px solid rgba(211,171,98,.25);padding-top:10px}.unit-card summary{cursor:pointer;color:#f0d5a1;font-weight:700}.unit-card details p{white-space:pre-line}
+.unit-section{margin:14px 0}.unit-section h3{font-size:clamp(25px,5vw,38px);font-weight:400;margin:.15rem 0 1rem}
+.story-callout{padding:18px;border-left:4px solid var(--gold);background:rgba(195,152,80,.09);font-size:18px;line-height:1.7}
+.home-route{display:grid;gap:0;margin-top:12px}.home-stop{position:relative;padding:13px 14px 13px 34px;border-left:2px solid #8b643b;margin-left:8px}.home-stop:before{content:"";position:absolute;left:-7px;top:19px;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid #21160f}.home-stop strong{display:block;color:#f2ddba}.home-stop span{color:#cbb693;font-size:14px}
+.milestone-list{display:grid;gap:9px}.milestone{display:grid;grid-template-columns:85px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid rgba(211,171,98,.18)}.milestone:last-child{border-bottom:0}.milestone b{color:var(--gold2)}
+.values-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.value-card{padding:14px;border:1px solid rgba(211,171,98,.28);border-radius:14px;background:#20150f}.value-card strong{display:block;color:#f2d7a1;margin-bottom:5px}.value-card span{font-size:14px;line-height:1.45;color:#ccb99a}
+.school-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.school-card{padding:14px;border:1px solid rgba(211,171,98,.25);border-radius:14px}.school-card strong{display:block;font-size:19px}.school-card span{color:#cbb693;line-height:1.5}
+@media(max-width:720px){.unit-grid,.school-grid{grid-template-columns:1fr}.values-grid{grid-template-columns:repeat(2,1fr)}.milestone{grid-template-columns:65px 1fr}}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  integrity="sha256-p4NxAoJBhIINfQ3ynhZkWgF/MZbMZr9Y50jIF9eQyqk=" crossorigin="">
@@ -312,16 +332,20 @@ const archiveData={
     "Unidentified photographs",
     "Unresolved family locations",
     "Family accounts awaiting documentary support"
-  ]
+  ],
+  familyUnits:[{
+    id:"blackwell-household-1",family:"Blackwell",title:"The Blackwell Household",status:"Family Unit 1 — complete for first publication",
+    members:["p-bradley-blackwell","p-rachel-zahner","p-brody-blackwell","p-vance-blackwell"]
+  }]
 };
 
 
 const TREE_IMPORT_VERSION="2026-07-24-v1";
 const treeImportPeople=[
-{id:"p-rachel-zahner",name:"Rachel Virginia Zahner",family:"Zahner",birth:1983,living:true,generation:1,status:"Possible",source:"Family tree screenshot",notes:"Relationship structure imported from user-provided tree image."},
-{id:"p-bradley-blackwell",name:"Bradley Todd Blackwell",family:"Blackwell",birth:1975,living:true,generation:1,status:"Possible",source:"Family tree screenshot"},
-{id:"p-brody-blackwell",name:"Brody Paul Blackwell",family:"Blackwell",birth:2002,living:true,generation:0,status:"Possible",source:"Family tree screenshot"},
-{id:"p-vance-blackwell",name:"Vance Cully Blackwell",family:"Blackwell",birth:2005,living:true,generation:0,status:"Possible",source:"Family tree screenshot"},
+{id:"p-rachel-zahner",name:"Rachel Virginia Zahner",family:"Zahner",birth:1983,living:true,generation:1,status:"Confirmed",source:"Rachel Blackwell family account and FamilySearch summary",occupation:"Real estate, retail management, resort hospitality",notes:"Born 26 March 1983 in Oklahoma City, Oklahoma. Wife of Bradley Todd Blackwell; mother of Brody and Vance."},
+{id:"p-bradley-blackwell",name:"Bradley Todd Blackwell",family:"Blackwell",birth:1975,living:true,generation:1,status:"Confirmed",source:"Rachel Blackwell family account and FamilySearch summary",occupation:"Motorcycle technician, industrial steel, union leadership, marina engineering",notes:"Born 26 May 1975. Husband of Rachel Virginia Zahner; father of Brody and Vance."},
+{id:"p-brody-blackwell",name:"Brody Paul Blackwell",family:"Blackwell",birth:2002,living:true,generation:0,status:"Confirmed",source:"Rachel Blackwell family account and FamilySearch summary",occupation:"Artist and historic-attraction employee",notes:"Born 23 July 2002 in Springfield, Missouri. Hollister High School graduate; associate degree from Ozarks Technical Community College."},
+{id:"p-vance-blackwell",name:"Vance Cully Blackwell",family:"Blackwell",birth:2005,living:true,generation:0,status:"Confirmed",source:"Rachel Blackwell family account and FamilySearch summary",occupation:"Appraiser",notes:"Adventure-seeker whose interests include motorcycles, gymnastics, serious weightlifting, and canoeing. Completed high school virtually through Reeds Spring."},
 
 {id:"p-gary-zahner",name:"Gary Paul Zahner",family:"Zahner",birth:1953,living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
 {id:"p-brenda-downing",name:"Brenda Joyce Downing",family:"Downing",birth:1955,living:true,generation:2,status:"Possible",source:"Family tree screenshot"},
@@ -413,6 +437,29 @@ function ensureTreeImport(){
 }
 ensureTreeImport();
 
+function ensureBlackwellFamilyUnit(){
+  const addUnique=(arr,item)=>{if(!arr.some(x=>x.id===item.id))arr.push(item)};
+  [
+    {id:"story-blackwell-household",title:"The Blackwell Household",family:"Blackwell",status:"Family account",details:"Brad and Rachel built a life centered on family, humor, adventure, curiosity, and saying yes to experiences. Their household story follows the places they made home, the careers that supported their family, the schools their sons attended, and the memories they created together.",source:"Rachel Blackwell family account"},
+    {id:"story-how-brad-rachel-met",title:"How Brad and Rachel Met",family:"Blackwell",status:"Family memory",details:"Brad and Rachel met because Brad’s parents had a vacation house on the lake near the highway where Rachel’s family lived. Their paths crossed through that shared lake community. They dated for less than six months before marrying at Cedar Ridge Baptist Church on Y-40 in Galena, Missouri.",source:"Rachel Blackwell family account"}
+  ].forEach(x=>addUnique(archiveData.stories,x));
+  [
+    {id:"home-s-plaza",name:"1839 S. Plaza, Springfield, Missouri",family:"Blackwell",lat:37.18,lng:-93.29,year:2000,status:"Family memory",event:"Brad and Rachel’s first house",evidence:"Recorded by Rachel Blackwell.",google:"https://www.google.com/maps/search/?api=1&query=1839%20S%20Plaza%20Springfield%20Missouri"},
+    {id:"home-ozark-5th",name:"5th Street, Ozark, Missouri",family:"Blackwell",lat:37.02,lng:-93.21,year:2001,status:"Family memory",event:"A Blackwell family home",evidence:"Exact street number and dates remain to be added.",google:"https://www.google.com/maps/search/?api=1&query=5th%20Street%20Ozark%20Missouri"},
+    {id:"home-ozark-11th",name:"11th Street, Ozark, Missouri",family:"Blackwell",lat:37.02,lng:-93.21,year:2003,status:"Family memory",event:"A Blackwell family home",evidence:"Exact street number and dates remain to be added.",google:"https://www.google.com/maps/search/?api=1&query=11th%20Street%20Ozark%20Missouri"},
+    {id:"home-ridgedale",name:"Ridgedale, Missouri",family:"Blackwell",lat:36.50,lng:-93.22,year:2010,status:"Family memory",event:"A later Blackwell family chapter",evidence:"Exact address and dates remain to be added.",google:"https://www.google.com/maps/search/?api=1&query=Ridgedale%20Missouri"},
+    {id:"home-lampe",name:"Lampe, Missouri",family:"Blackwell",lat:36.57,lng:-93.44,year:2020,status:"Family memory",event:"The family’s latest home chapter",evidence:"Recorded by Rachel Blackwell.",google:"https://www.google.com/maps/search/?api=1&query=Lampe%20Missouri"},
+    {id:"cedar-ridge-church",name:"Cedar Ridge Baptist Church, Galena, Missouri",family:"Blackwell",lat:36.81,lng:-93.47,year:2001,status:"Family memory",event:"Marriage of Brad and Rachel",evidence:"The church was described as being on Y-40 in Galena, Missouri.",google:"https://www.google.com/maps/search/?api=1&query=Cedar%20Ridge%20Baptist%20Church%20Galena%20Missouri"}
+  ].forEach(x=>addUnique(archiveData.places,x));
+  [
+    {id:"career-brad",title:"Brad — Machines, Leadership & Marinas",category:"Engineering and mechanical work",family:"Blackwell",details:"Motorcycle shops and landscaping led to industrial steel work, union leadership, and finally marina engineering and regional maintenance leadership.",people:["Bradley Todd Blackwell"]},
+    {id:"career-rachel",title:"Rachel — A Career Built Around Family",category:"Real estate, retail and hospitality",family:"Blackwell",details:"Rachel became a licensed real estate agent directly out of high school. The flexibility allowed her to remain with both boys for years while maintaining a career. She later transitioned into retail management and then resort hospitality management before retiring at forty-two.",people:["Rachel Virginia Zahner"]},
+    {id:"career-brody",title:"Brody — Art, Writing & Living History",category:"Creative work and historic attraction",family:"Blackwell",details:"Brody draws, writes, values fitness, and enjoys working at an 1800s-themed attraction.",people:["Brody Paul Blackwell"]},
+    {id:"career-vance",title:"Vance — Challenge & Appraisal",category:"Appraisal and athletics",family:"Blackwell",details:"Vance works as an appraiser and is defined by a drive toward challenge through motorcycles, gymnastics, weightlifting, canoeing, and new adventures.",people:["Vance Cully Blackwell"]}
+  ].forEach(x=>addUnique(archiveData.livelihoods,x));
+}
+ensureBlackwellFamilyUnit();
+
 function archiveCounts(){
   const generations=new Set(archiveData.people.filter(p=>p.generation!==null&&p.generation!==undefined).map(p=>p.generation)).size;
   return [
@@ -458,7 +505,7 @@ const mapMarkup=`
   <aside class="map-records" id="mapRecords"></aside>
 </div>`;
 const rooms={
-families:{k:"Family Assembly",t:"Four family lines",i:"Select a family to see its people, places, photographs, stories, sources, and open questions.",c:`<div id="familiesApp"></div>`},
+families:{k:"Family Assembly",t:"Four family lines",i:"Select a family to open its household chapters, people, places, photographs, stories, sources, and open questions.",c:`<div id="familiesApp"></div>`},
 wanderings:{k:"Wanderings",t:"The family atlas",i:"Documented places, family leads, and locations still waiting to be identified.",c:mapMarkup},
 album:{k:"Album",t:"Photographs and objects",i:"Select a family or collection, open an image, and see every connected person, place, story, and source.",c:`<div id="albumApp"></div>`},
 livelihoods:{k:"Lives & Livelihoods",t:"The images come from the lives",i:"Select a livelihood to see the people, records, places, photographs, and stories connected to it.",c:`<div id="livelihoodsApp"></div>`},
@@ -680,25 +727,51 @@ function initFamilies(){
   app.innerHTML=`<div class="import-banner"><h3>Working tree imported</h3><p>The names and relationships taken from the screenshots are starting points only. Every imported connection is marked Possible or Placeholder until supporting records are attached.</p></div>
   <div class="record-grid">${archiveData.families.map(f=>{
     const r=familyRecords(f),s=familySummary(f),g=gapStats(f);
-    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
+    return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}${f==="Blackwell"?" · Family Unit 1 complete":""}</small><h3>${f==="Blackwell"?"The Blackwell Household":s[0]}</h3><p>${f==="Blackwell"?"Brad, Rachel, Brody, and Vance — one complete household chapter.":s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
   }).join("")}</div><div id="familyDetail"></div>`;
 }
 function showFamily(f){
   const people=familyPeople(f),rels=familyRelationships(f),g=gapStats(f),s=familySummary(f),box=document.getElementById("familyDetail");
+  if(f==="Blackwell"){
+    const profiles=[
+      {role:"Father · Husband · Collector of experiences",name:"Bradley Todd Blackwell",life:"Born 26 May 1975",summary:"Brad has always been drawn to machines, motion, challenge, and the experiences they make possible.",bio:`As a young man, Brad worked in motorcycle shops and landscaping before moving into industrial steel work. He became a union vice president and later entered marina engineering and maintenance, eventually serving as Regional Manager of Engineering and Maintenance for the Inland Region of Suntex Marinas.
+
+He attended Glendale High School in Springfield, studied psychology at Drury College before choosing another direction, and later attended Motorcycle Mechanics Institute in Florida. He can repair almost anything and has maintained friendships across decades.
+
+Motorcycles, ATVs, boats, engines, travel, and mechanical projects are not simply possessions to Brad. They are ways to create experiences and bring his family along. He introduced his sons to the machines and adventures he loved, and he and Rachel continue exploring together.
+
+He believed life should be enjoyed, problems could be solved, and almost every adventure was worth saying yes to.`},
+      {role:"Mother · Wife · Keeper of memories",name:"Rachel Virginia Zahner",life:"Born 26 March 1983 · Oklahoma City, Oklahoma",summary:"Rachel built her career around her family and now preserves the ordinary stories that made their life together meaningful.",bio:`Rachel became a licensed real estate agent directly out of high school. Real estate allowed her to maintain a career while staying with both of her boys for years. As they grew, she transitioned into retail management and then resort hospitality management. She retired at forty-two.
+
+Her favorite roles have always been mother and aunt. With many nieces and nephews close in age to Brody and Vance, holidays, gatherings, lake days, road trips, and ordinary weekends became a large shared childhood.
+
+Rachel and Brad share a love of travel and exploration. This archive grew from Rachel’s belief that the everyday stories—where people lived, how they met, what made them laugh, and what they chose for one another—deserve to be preserved alongside official records.`},
+      {role:"Son · Artist · Writer",name:"Brody Paul Blackwell",life:"Born 23 July 2002 · Springfield, Missouri",summary:"Brody brings creativity, observation, and imagination to the family story.",bio:`Brody enjoys drawing and writing and has always had a creative way of looking at the world. He graduated from Hollister High School and earned an associate degree from Ozarks Technical Community College.
+
+He works at an 1800s-themed attraction and genuinely enjoys the historical environment. He also values weightlifting and fitness and is especially devoted to his dogs.`},
+      {role:"Son · Adventurer · Athlete",name:"Vance Cully Blackwell",life:"Born 2005",summary:"Vance is defined less by a single hobby than by his willingness to test himself.",bio:`Vance enjoys motorcycles, gymnastics, serious weightlifting, canoeing, travel, and experiences that demand courage or skill. Although he enjoys being outdoors, adventure and challenge are the stronger thread in his story.
+
+He attended school in Ozark and Hollister and completed high school virtually through Reeds Spring. He later became an appraiser.`}
+    ];
+    box.innerHTML=`<section class="family-unit-hero"><small>Family Unit 1 · First published household</small><h3>The Blackwell Household</h3><p>Brad and Rachel built a home centered on adventure, curiosity, laughter, and family. Together they raised Brody and Vance while moving through southwest Missouri and creating memories through travel, machines, art, athletics, lake life, and shared experiences.</p><span class="family-unit-status">✓ Complete for this family-unit upload</span></section>
+    <section class="unit-section"><h3>How this household began</h3><div class="story-callout">Brad and Rachel met because Brad’s parents had a vacation house on the lake near the highway where Rachel’s family lived. Their paths crossed through that shared lake community. They dated for less than six months before marrying at <strong>Cedar Ridge Baptist Church</strong> on Y-40 in Galena, Missouri.</div></section>
+    <div class="unit-grid">${profiles.map(p=>`<article class="unit-card"><div class="role">${safeText(p.role)}</div><h4>${safeText(p.name)}</h4><p><strong>${safeText(p.life)}</strong></p><p>${safeText(p.summary)}</p><details><summary>Read the life story</summary><p>${safeText(p.bio)}</p></details></article>`).join("")}</div>
+    <section class="unit-section"><h3>The homes they made</h3><p>Each move marks a different chapter of the family’s life. Exact dates and missing street numbers can be added as they are remembered or documented.</p><div class="home-route"><div class="home-stop"><strong>1839 S. Plaza · Springfield, Missouri</strong><span>Brad and Rachel’s first house together.</span></div><div class="home-stop"><strong>5th Street · Ozark, Missouri</strong><span>The family’s first Ozark chapter.</span></div><div class="home-stop"><strong>11th Street · Ozark, Missouri</strong><span>Another chapter of raising their boys in Ozark.</span></div><div class="home-stop"><strong>Ridgedale, Missouri</strong><span>The family moved closer to the Table Rock Lake area.</span></div><div class="home-stop"><strong>Lampe, Missouri</strong><span>Their latest home chapter.</span></div></div></section>
+    <section class="unit-section"><h3>School years</h3><div class="school-grid"><div class="school-card"><strong>Brody</strong><span>Attended school in Ozark, graduated from Hollister High School, and earned an associate degree from Ozarks Technical Community College.</span></div><div class="school-card"><strong>Vance</strong><span>Attended school in Ozark and Hollister, then completed high school virtually through Reeds Spring.</span></div></div></section>
+    <section class="unit-section"><h3>Shared family milestones</h3><div class="milestone-list"><div class="milestone"><b>1975</b><span>Brad is born.</span></div><div class="milestone"><b>1983</b><span>Rachel is born in Oklahoma City.</span></div><div class="milestone"><b>Early life</b><span>Brad and Rachel meet through their families’ connection to the lake community.</span></div><div class="milestone"><b>Marriage</b><span>After dating less than six months, they marry at Cedar Ridge Baptist Church in Galena.</span></div><div class="milestone"><b>2002</b><span>Brody is born in Springfield.</span></div><div class="milestone"><b>2005</b><span>Vance is born.</span></div><div class="milestone"><b>Present</b><span>Brad and Rachel continue traveling, exploring, and collecting experiences together.</span></div></div></section>
+    <section class="unit-section"><h3>What mattered to this family</h3><div class="values-grid"><div class="value-card"><strong>Adventure</strong><span>New places and new experiences were usually worth saying yes to.</span></div><div class="value-card"><strong>Humor</strong><span>Laughter remained part of work, travel, family gatherings, and ordinary days.</span></div><div class="value-card"><strong>Learning</strong><span>Mechanical skill, art, history, athletics, and curiosity each had a place.</span></div><div class="value-card"><strong>Family</strong><span>The value of an experience came from sharing it and remembering it together.</span></div></div></section>
+    <section class="unit-section"><h3>Archive status</h3><p>This first family unit now includes four connected biographies, the meeting and marriage story, Rachel’s complete career progression, the family-home route, school histories, occupations, values, and shared milestones. Photographs already gathered for this household can be attached through the Album or Research Desk without changing the written chapter.</p><div class="tree-toolbar"><button class="action-btn primary" onclick="addDiscoveryFor('photo','Blackwell')">Add household photographs</button><button class="action-btn" onclick="addDiscoveryFor('source','Blackwell')">Add supporting evidence</button><button class="action-btn" onclick="addDiscoveryFor('story','Blackwell')">Add another memory</button></div></section>`;
+    box.scrollIntoView({behavior:"smooth",block:"start"});return;
+  }
   const generations=[...new Set(people.map(p=>p.generation).filter(x=>x!==null&&x!==undefined))].sort((a,b)=>b-a);
   box.innerHTML=`<section class="detail-panel"><small>${f}</small><h3>${s[0]}</h3><p>${s[1]}</p>
-  <div class="gap-grid">
-   <div class="gap-card"><b>${g.people}</b><span>people imported</span></div>
-   <div class="gap-card"><b>${g.generations}</b><span>generations represented</span></div>
-   <div class="gap-card"><b>${g.missingBirth}</b><span>birth years missing</span></div>
-   <div class="gap-card"><b>${g.unconfirmedRelationships}</b><span>relationships to prove</span></div>
-  </div>
+  <div class="gap-grid"><div class="gap-card"><b>${g.people}</b><span>people imported</span></div><div class="gap-card"><b>${g.generations}</b><span>generations represented</span></div><div class="gap-card"><b>${g.missingBirth}</b><span>birth years missing</span></div><div class="gap-card"><b>${g.unconfirmedRelationships}</b><span>relationships to prove</span></div></div>
   <div class="tree-toolbar"><button class="action-btn primary" onclick="addDiscoveryFor('person','${f}')">Add family member</button><button class="action-btn" onclick="addDiscoveryFor('source','${f}')">Add evidence</button><button class="action-btn" onclick="addDiscoveryFor('photo','${f}')">Add photograph</button></div>
   <div class="tree-shell">${generations.map(gen=>`<div class="generation-block"><h4>Generation ${gen}</h4>${people.filter(p=>p.generation===gen).map(p=>`<div class="person-row"><div><strong>${safeText(p.name)}</strong><span>${lifespan(p)} · ${safeText(p.source||"No source")}</span></div><span class="evidence-mini ${statusClass(p.status)}">${safeText(p.status||"Possible")}</span></div>`).join("")}</div>`).join("")}</div>
-  <div class="detail-section"><strong>Imported relationships</strong><div class="relationship-list">${rels.slice(0,80).map(r=>{const a=archiveData.people.find(p=>p.id===r.personId),b=archiveData.people.find(p=>p.id===r.relatedId);return `<div class="relationship-card"><p><strong>${safeText(a?.name||"Unknown")}</strong> is listed as child of <strong>${safeText(b?.name||"Unknown")}</strong></p><span class="evidence-mini ${statusClass(r.status)}">${safeText(r.status)}</span></div>`}).join("")||"No relationships loaded."}</div></div>
-  </section>`;
+  <div class="detail-section"><strong>Imported relationships</strong><div class="relationship-list">${rels.slice(0,80).map(r=>{const a=archiveData.people.find(p=>p.id===r.personId),b=archiveData.people.find(p=>p.id===r.relatedId);return `<div class="relationship-card"><p><strong>${safeText(a?.name||"Unknown")}</strong> is listed as child of <strong>${safeText(b?.name||"Unknown")}</strong></p><span class="evidence-mini ${statusClass(r.status)}">${safeText(r.status)}</span></div>`}).join("")||"No relationships loaded."}</div></div></section>`;
   box.scrollIntoView({behavior:"smooth",block:"start"});
 }
+
 function initAlbum(){
   const app=document.getElementById("albumApp");if(!app)return;
   app.innerHTML=`<div class="collection-toolbar"><button class="filter-btn active" data-af="All">All</button>${archiveData.families.map(f=>`<button class="filter-btn" data-af="${f}">${f}</button>`).join("")}<button class="filter-btn" data-af="Unidentified">Unidentified</button></div><div id="photoGrid"></div><div id="photoDetail"></div>`;
