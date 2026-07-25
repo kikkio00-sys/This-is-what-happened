@@ -1,0 +1,28 @@
+/* Homepage visual cleanup: preserve the museum atmosphere while hiding baked-in labels in legacy card art. */
+.object-card img{
+  transform:scale(1.08);
+  filter:blur(2.4px) brightness(.34) saturate(.72) contrast(.9);
+  opacity:.72;
+}
+.object-card:after{
+  background:
+    linear-gradient(180deg,rgba(8,6,4,.42),rgba(8,6,4,.58) 42%,rgba(4,3,2,.96)),
+    radial-gradient(circle at 50% 35%,transparent,rgba(0,0,0,.38));
+}
+.object-card span{
+  bottom:50%;
+  transform:translateY(50%);
+  padding:0 10px;
+  text-shadow:0 2px 6px #000,0 0 18px rgba(0,0,0,.95);
+}
+.object-card strong{font-size:clamp(18px,4.5vw,30px)}
+.object-card small{font-size:clamp(10px,2.7vw,14px);margin-top:7px}
+.object-card:hover img,.object-card:focus-visible img{
+  transform:scale(1.12);
+  filter:blur(2px) brightness(.4) saturate(.78) contrast(.92);
+}
+.discovery-card{min-height:150px}
+@media(max-width:520px){
+  .object-card img{filter:blur(2px) brightness(.31) saturate(.7)}
+  .object-card strong{font-size:clamp(17px,6vw,25px)}
+}
