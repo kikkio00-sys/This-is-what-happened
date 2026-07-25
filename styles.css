@@ -319,3 +319,51 @@ button.record-card{cursor:pointer}
 .fact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0}.fact-list div{padding:12px;border-bottom:1px solid rgba(76,51,29,.22)}.fact-list dt{color:var(--era-accent);font:700 9px system-ui;letter-spacing:.08em;text-transform:uppercase}.fact-list dd{margin:5px 0 0;font-size:17px}.question-list{list-style:none;display:grid;gap:10px;padding:0}.question-list li{display:flex;flex-direction:column;align-items:flex-start;gap:8px;border-bottom:1px solid rgba(76,51,29,.22);padding:0 0 12px}.question-list span:last-child{line-height:1.5}
 @media(max-width:760px){.journal-open-cover,.ancestor-hero{grid-template-columns:1fr}.journal-cover-mark{max-width:180px}.journal-page-grid,.ancestor-page-grid{grid-template-columns:1fr}.journal-section-wide{grid-column:auto}.ancestor-index{grid-template-columns:1fr}.ancestor-portrait{width:min(100%,280px)}.journal-timeline li{grid-template-columns:1fr;gap:7px}.journal-timeline li:before{display:none}}
 @media(max-width:430px){.family-journal-shell,.ancestor-page{padding:8px}.journal-open-cover{min-height:0;padding:24px 18px}.journal-open-cover h3,.ancestor-hero h3{font-size:38px}.journal-section{padding:16px}.fact-list,.journal-media-grid{grid-template-columns:1fr}.ancestor-index-card{grid-template-columns:48px minmax(0,1fr) auto}.ancestor-monogram{width:46px;height:54px}}
+
+/* Sprint 3: bounded, data-driven scrapbook viewport */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+body.scrapbook-open{overflow:hidden;height:100svh;height:100dvh}
+body.scrapbook-open .room{overflow:hidden;height:100svh;height:100dvh}
+body.scrapbook-open .room-header{display:none}
+body.scrapbook-open .room-content{position:fixed;z-index:50;inset:0;width:100%;height:100svh;height:100dvh;margin:0;padding:0;overflow:hidden}
+.scrapbook{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 0,#3b291b,#100b08 55%);color:#2b2118}
+.scrapbook-toolbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:min(1180px,100%);margin:0 auto 8px;color:var(--cream)}
+.scrapbook-toolbar h3{margin:1px 0 0;font-size:clamp(20px,3vw,34px);font-weight:400;line-height:1}
+.scrapbook-toolbar small{font:700 9px system-ui;text-transform:uppercase;letter-spacing:.12em;color:var(--gold2)}
+.scrapbook-close,.scrapbook-controls button{border:1px solid var(--gold);border-radius:999px;background:#17110d;color:var(--cream);padding:9px 14px;cursor:pointer}
+.scrapbook-indicator{font:700 12px system-ui;color:#e0c38d;white-space:nowrap}
+.scrapbook-pages{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(1180px,100%);min-height:0;margin:auto;filter:drop-shadow(0 18px 24px #0008)}
+.scrapbook-page{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);padding:clamp(14px,2.3vw,28px);background:#eadcbe;color:#2b2118;border:1px solid #a98c61;overflow:hidden}
+.scrapbook-page:first-child{border-radius:12px 2px 2px 12px;background:linear-gradient(90deg,#e2d1ad,#f0e4ca 92%,#c6aa7a)}
+.scrapbook-page:last-child{border-radius:2px 12px 12px 2px;background:linear-gradient(90deg,#c6aa7a,#f0e4ca 8%,#e2d1ad)}
+.scrapbook-page-heading{display:flex;align-items:baseline;gap:10px;padding-bottom:8px;border-bottom:1px solid #9c815b}
+.scrapbook-page-heading span{font:700 9px system-ui;letter-spacing:.12em;color:#765835}
+.scrapbook-page-heading h4{margin:0;font-size:clamp(19px,2.3vw,30px);font-weight:400}
+.scrapbook-page-scroll{min-height:0;overflow:auto;overscroll-behavior:contain;padding:12px 5px 8px 1px;scrollbar-color:#96764d transparent}
+.scrapbook-page-scroll:focus-visible,.scrapbook button:focus-visible{outline:3px solid #1479a8;outline-offset:2px}
+.scrapbook-controls{display:flex;justify-content:space-between;gap:12px;width:min(1180px,100%);margin:8px auto 0}
+.scrapbook-controls button:disabled{opacity:.42;cursor:not-allowed}
+.scrapbook-cover{display:flex;min-height:100%;flex-direction:column;justify-content:center;text-align:center}
+.scrapbook-cover h3,.ancestor-summary h3{font-size:clamp(32px,5vw,58px);font-weight:400;margin:8px 0}
+.scrapbook-cover p,.ancestor-summary p,.scrapbook-card p,.scrapbook-empty p{line-height:1.45}
+.scrapbook-card{border:1px solid #ae946c;padding:12px;margin-bottom:10px;background:#f4e8cf}
+.scrapbook-card>h4{font-size:22px;font-weight:400;margin:6px 0}
+.scrapbook .journal-record{background:#f4e8cf;border-color:#ae946c;color:#2b2118;margin-bottom:9px}
+.scrapbook .journal-record p,.scrapbook .legacy-note p,.scrapbook .context-note p{color:#4d402e}
+.scrapbook .research-label{color:#5c472b;border-color:#9c815b}
+.scrapbook-empty{padding:18px;border:1px dashed #9c815b;text-align:center}
+.scrapbook .journal-media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.scrapbook .ancestor-index-card{color:#2b2118;background:#f4e8cf;border-color:#9c815b}
+.scrapbook .journal-link{color:#2b2118;border-color:#765835}
+@media(max-width:800px) and (orientation:portrait){
+ .scrapbook-toolbar{grid-template-columns:auto minmax(0,1fr);gap:8px}.scrapbook-indicator{grid-column:1/-1;text-align:center}
+ .scrapbook-pages{grid-template-columns:1fr}.scrapbook-page,.scrapbook-page:first-child,.scrapbook-page:last-child{border-radius:10px;background:linear-gradient(90deg,#e2d1ad,#f0e4ca 8% 92%,#e2d1ad)}
+}
+@media(max-height:740px){
+ .scrapbook{padding-top:max(4px,env(safe-area-inset-top));padding-bottom:max(4px,env(safe-area-inset-bottom))}
+ .scrapbook-toolbar{margin-bottom:4px}.scrapbook-toolbar h3{font-size:20px}.scrapbook-close,.scrapbook-controls button{padding:6px 11px}
+ .scrapbook-page{padding:10px 14px}.scrapbook-page-heading{padding-bottom:5px}.scrapbook-page-heading h4{font-size:19px}.scrapbook-page-scroll{padding-top:7px}
+ .scrapbook-controls{margin-top:4px}.scrapbook-cover h3,.ancestor-summary h3{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){.scrapbook,.scrapbook *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+body.scrapbook-open{overflow:hidden!important}
