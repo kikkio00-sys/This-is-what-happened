@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0c0907">
+<meta name="theme-color" content="#17100b">
 <title>This Is What Happened</title>
 <!-- Maintainable build: structure, styles, scripts, and images are stored separately. -->
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  integrity="sha256-p4NxAoJBhIINfQ3ynhZkWgF/MZbMZr9Y50jIF9eQyqk=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -13,22 +12,71 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="homepage-fixes.css">
 <link rel="stylesheet" href="mobile-homepage.css">
+<link rel="stylesheet" href="journal-homepage.css">
 </head>
 <body>
 <section class="entrance active-view" id="entrance">
-<header class="entrance-header"><div class="monogram">T</div><div><h1>This Is What Happened</h1><p>A living archive of four families</p></div></header>
+<header class="entrance-header"><div class="monogram">T</div><div><h1>This Is What Happened</h1><p>A living family journal of four connected lines</p></div></header>
 <nav class="family-line" hidden aria-hidden="true"><button data-family>Zahner</button><button data-family>Downing</button><button data-family>Blackwell</button><button data-family>Barrett</button></nav>
-<section class="family-map" aria-labelledby="family-map-title">
-  <p id="family-map-title" class="family-map-title">Choose a family line</p>
-  <div class="family-map-stage" role="group" aria-label="Four family lines">
-    <button type="button" class="family-map-branch" data-map-family="Zahner">Zahner</button>
-    <button type="button" class="family-map-branch" data-map-family="Downing">Downing</button>
-    <button type="button" class="family-map-branch" data-map-family="Blackwell">Blackwell</button>
-    <button type="button" class="family-map-branch" data-map-family="Barrett">Barrett</button>
-    <p class="family-map-root">One archive · four family lines.</p>
-  </div>
-</section>
-<main class="object-grid">
+
+<main class="journal-desk" aria-label="Open family journal on a research desk">
+  <article class="open-journal">
+    <section class="journal-page">
+      <p class="journal-kicker">The family journal</p>
+      <h2 class="journal-title">This Is What Happened</h2>
+      <p class="journal-subtitle">The lives, movements, work, photographs and stories that became our family.</p>
+      <p class="journal-intro">Open one family line and follow its story across generations. Each family has a shared chapter, every person has a scrapbook page, and the records supporting those stories remain preserved in the archive.</p>
+      <aside class="journal-note">The family tree is the table of contents. Portraits lead to people. Places lead to migration. Records lead to the evidence.</aside>
+      <div class="journal-tabs" aria-label="Journal sections">
+        <button class="journal-tab" data-room="families">Family stories</button>
+        <button class="journal-tab" data-room="wanderings">Migration maps</button>
+        <button class="journal-tab" data-room="album">Photographs</button>
+        <button class="journal-tab" data-room="stories">Stories</button>
+        <button class="journal-tab" data-room="livelihoods">Lives &amp; work</button>
+        <button class="journal-tab" data-room="archive">Archive</button>
+      </div>
+    </section>
+
+    <section class="journal-page">
+      <section class="family-map" aria-labelledby="family-map-title">
+        <p id="family-map-title" class="family-map-title">Choose a family line to open its journal</p>
+        <div class="family-map-stage" role="group" aria-label="Four family journals">
+          <button type="button" class="family-map-branch" data-map-family="Zahner">Zahner</button>
+          <button type="button" class="family-map-branch" data-map-family="Downing">Downing</button>
+          <button type="button" class="family-map-branch" data-map-family="Blackwell">Blackwell</button>
+          <button type="button" class="family-map-branch" data-map-family="Barrett">Barrett</button>
+          <p class="family-map-root">Four journals. One combined family story.</p>
+        </div>
+      </section>
+    </section>
+  </article>
+
+  <aside class="desk-stack" aria-label="Items beside the journal">
+    <section class="desk-card migration-card">
+      <h2>The Journey</h2>
+      <p>Migration remains a central part of every family chapter and every individual scrapbook page.</p>
+      <div class="migration-path" aria-label="Example migration path"><span>Birthplace</span><span>Settlements</span><span>Later generations</span><span>Today</span></div>
+      <button type="button" data-room="wanderings">Open migration maps</button>
+    </section>
+
+    <section class="desk-card">
+      <h3>Inside each person’s scrapbook</h3>
+      <p>One carefully centered portrait introduces the person. Additional photographs open in their family album instead of crowding the page.</p>
+      <div class="collection-key">
+        <span>Featured portrait</span><span>Life story</span><span>Personal map</span><span>Timeline</span><span>View all images</span><span>Sources</span>
+      </div>
+      <button type="button" data-room="families">Meet the families</button>
+    </section>
+
+    <section class="desk-card">
+      <h3>Published story, archive, workshop</h3>
+      <p>Real photographs belong in albums. Historical documents belong in the archive. Screenshots and research captures stay in the private working material used to build profiles and trees.</p>
+      <button type="button" data-room="archive">Open the archive</button>
+    </section>
+  </aside>
+</main>
+
+<main class="object-grid" aria-hidden="true">
 <button class="object-card" data-room="families"><img src="family-book.jpg" alt="Antique family history book"><span><strong>Meet the Family</strong><small>Meet the families</small></span></button>
 <button class="object-card" data-room="wanderings"><img src="wanderings-map.jpg" alt="Historic map"><span><strong>Wanderings</strong><small>See where they wandered</small></span></button>
 <button class="object-card" data-room="album"><img src="photo-album.jpg" alt="Historic family photograph album"><span><strong>Photographs</strong><small>Browse photographs</small></span></button>
@@ -41,6 +89,6 @@
 <aside class="inventory" id="inventory"><div class="inventory-head"><strong>Inside the archive</strong><button id="closeInventory">×</button></div><div class="count-grid" id="countGrid"></div></aside>
 </section>
 <section class="room" id="room"><header class="room-header"><button class="back-button" id="backButton">←</button><div><p class="room-kicker" id="roomKicker"></p><h2 id="roomTitle"></h2><p id="roomIntro"></p></div></header><main class="room-content" id="roomContent"></main></section>
-
 <script src="app.js"></script>
+<script src="journal-homepage.js"></script>
 </body></html>
