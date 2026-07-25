@@ -258,10 +258,46 @@ discovery:{k:"Research Desk",t:"Add a discovery",i:"Enter information once, revi
 </div>`}
 };
 
+// FAMILY JOURNAL DATA BOUNDARY
+// Journal and ancestor records stay declarative so the same renderers can serve every
+// family and era without placing biography-specific markup in index.html.
+const familyJournals={
+  Zahner:{
+    family:"Zahner",era:"victorian",volume:"Volume I",status:"Growing journal",
+    introduction:"The Zahner journal begins with the people and records already held in the archive. Open a name to follow what is documented, what is remembered, and what still needs careful research.",
+    ancestorIds:["theodor-zahner-1860"],
+    legacy:"What one generation passed to the next will be added only when a record or family memory supports it. For now, this journal keeps those questions visible."
+  },
+  Downing:{family:"Downing",era:"modern",volume:"Volume II",status:"Journal shell ready",ancestorIds:[]},
+  Blackwell:{family:"Blackwell",era:"modern",volume:"Volume III",status:"Journal shell ready",ancestorIds:[]},
+  Barrett:{family:"Barrett",era:"modern",volume:"Volume IV",status:"Journal shell ready",ancestorIds:[]}
+};
+
+const ancestorRecords={
+  "theodor-zahner-1860":{
+    id:"theodor-zahner-1860",family:"Zahner",era:"victorian",name:"Theodor Zahner",lifeDates:"1860–date of death not documented here",
+    portrait:"No identified portrait has been added.",
+    facts:[
+      ["Sex","Male"],["Birth","25 October 1860"],["Birthplace","Kenzingen, Freiburg, Baden"],
+      ["Christening","28 October 1860"],["Father","Ludwig Zahner"],["Mother","Anna Maria Kromer"]
+    ],
+    narrative:"The surviving starting record brings us close to the beginning of Theodor’s story: a child born in Kenzingen on 25 October 1860 and christened three days later. It names his parents, Ludwig Zahner and Anna Maria Kromer. Beyond those details, this page deliberately leaves room for the records and family memories still to be found.",
+    timeline:[
+      {date:"25 October 1860",title:"Birth",detail:"Born in Kenzingen, Freiburg, Baden.",status:"Documented"},
+      {date:"28 October 1860",title:"Christening",detail:"Christened three days after his birth.",status:"Documented"}
+    ],
+    places:[{name:"Kenzingen, Freiburg, Baden",detail:"Documented birthplace and place associated with the christening record.",status:"Documented"}],
+    sources:[{title:"Catholic christening index for Theodore Zahner",detail:"Existing archive source for the birth, christening, and parent names.",status:"Documented"}],
+    historicalContext:"No historical context has been added yet. Future context must be specific to Kenzingen in 1860, supported by reliable sources, and kept separate from Theodor’s documented personal facts.",
+    questions:["Which original parish or civil record underlies the supplied index?","Are additional records available that can document Theodor’s later life?"],
+    legacy:"What Theodor passed on has not yet been documented in this journal. Family memories and records can be added without turning a possibility into a fact."
+  }
+};
+
 const entrance=document.getElementById("entrance"),room=document.getElementById("room"),inventory=document.getElementById("inventory");
 refreshCounts();
-document.getElementById("inventoryHandle").onclick=()=>inventory.classList.add("open");
-document.getElementById("closeInventory").onclick=()=>inventory.classList.remove("open");
+document.getElementById("inventoryHandle").onclick=()=>{inventory.classList.add("open");document.getElementById("inventoryHandle").setAttribute("aria-expanded","true")};
+document.getElementById("closeInventory").onclick=()=>{inventory.classList.remove("open");document.getElementById("inventoryHandle").setAttribute("aria-expanded","false")};
 
 
 
@@ -487,6 +523,77 @@ function gapStats(f){
     unconfirmedRelationships:rels.filter(r=>r.status!=="Confirmed").length
   };
 }
+
+// FAMILY JOURNAL RENDERING BOUNDARY
+// Collection sections resolve records by family at render time. This avoids copying
+// photographs, sources, stories, and places into each journal's configuration.
+function researchLabel(status="Research Question"){
+  const allowed=["Documented","Family Memory","Historical Context","Research Question"];
+  const label=allowed.includes(status)?status:"Research Question";
+  return `<span class="research-label" data-status="${label.toLowerCase().replace(/\s+/g,"-")}">${label}</span>`;
+}
+function journalEmpty(message,action=""){
+  return `<div class="journal-empty">${researchLabel("Research Question")}<p>${safeText(message)}</p>${action?`<button class="journal-link" onclick="${action}">Add to this journal</button>`:""}</div>`;
+}
+function journalSection(id,title,content,options={}){
+  return `<section class="journal-section ${options.wide?"journal-section-wide":""}" id="${id}"><div class="journal-section-heading"><span>${safeText(options.number||"")}</span><h3>${safeText(title)}</h3></div>${content}</section>`;
+}
+function familyJournalRecords(family){
+  const records=familyRecords(family);
+  return {...records,people:familyPeople(family)};
+}
+function renderFamilyJournal(family){
+  const journal=familyJournals[family],box=document.getElementById("familyDetail");
+  if(!journal||!box)return;
+  const records=familyJournalRecords(family);
+  const ancestors=journal.ancestorIds.map(id=>ancestorRecords[id]).filter(Boolean);
+  const ancestorIndex=ancestors.length?ancestors.map(a=>`<button class="ancestor-index-card" onclick="openAncestorPage('${a.id}')"><span class="ancestor-monogram" aria-hidden="true">${safeText(a.name.charAt(0))}</span><span><small>${researchLabel("Documented")}</small><strong>${safeText(a.name)}</strong><em>${safeText(a.lifeDates)}</em></span><span aria-hidden="true">→</span></button>`).join(""):journalEmpty("No ancestor page has been documented for this family line yet.");
+  const timeline=ancestors.flatMap(a=>a.timeline||[]);
+  const photos=records.photos.slice(0,6).map(p=>`<article class="journal-media-card">${p.image?`<img src="${p.image}" alt="${safeText(p.title||"Family photograph")}">`:""}<strong>${safeText(p.title)}</strong><span>${safeText(p.date||"Date not identified")}</span></article>`).join("");
+  const sources=records.sources.slice(0,8).map(s=>`<article class="journal-record"><div>${researchLabel("Documented")}<h4>${safeText(s.title)}</h4><p>${safeText(s.date||s.source||"Source details are preserved in the archive.")}</p></div></article>`).join("");
+  const places=records.places.slice(0,8).map(p=>`<article class="journal-record"><div>${researchLabel(p.status==="Documented"?"Documented":"Research Question")}<h4>${safeText(p.name)}</h4><p>${safeText(p.event||p.evidence||"")}</p></div></article>`).join("");
+  const stories=records.stories.slice(0,8).map(s=>`<article class="journal-record"><div>${researchLabel(String(s.status||"").toLowerCase().includes("memory")?"Family Memory":"Research Question")}<h4>${safeText(s.title)}</h4><p>${safeText(s.details||"This story is named in the archive but has not yet been written.")}</p></div></article>`).join("");
+  box.innerHTML=`<article class="family-journal-shell" data-family="${safeText(family)}" data-era="${safeText(journal.era)}">
+    <nav class="journal-breadcrumbs" aria-label="Journal navigation"><button onclick="showFamilyIndex()">All family journals</button><span aria-hidden="true">/</span><span aria-current="page">${safeText(family)}</span></nav>
+    <header class="journal-open-cover"><div class="journal-cover-mark" aria-hidden="true">${safeText(family.charAt(0))}</div><div><small>${safeText(journal.volume)} · ${safeText(journal.status)}</small><h3>The ${safeText(family)} Family Journal</h3><p>${safeText(journal.introduction||familySummary(family)?.[1]||"")}</p><div class="journal-cover-actions"><button onclick="document.getElementById('ancestor-index')?.scrollIntoView({behavior:'smooth'})">Open the ancestor index</button><button onclick="addDiscoveryFor('source','${safeText(family)}')">Add a record</button></div></div></header>
+    <div class="journal-page-grid">
+      ${journalSection("ancestor-index","Ancestor index",`<div class="ancestor-index">${ancestorIndex}</div>`,{number:"01",wide:true})}
+      ${journalSection("family-timeline","Family timeline",timeline.length?`<ol class="journal-timeline">${timeline.map(e=>`<li><time>${safeText(e.date)}</time><div>${researchLabel(e.status)}<h4>${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></div></li>`).join("")}</ol>`:journalEmpty("No documented timeline events have been added yet."),{number:"02"})}
+      ${journalSection("journal-photographs","Photographs",photos?`<div class="journal-media-grid">${photos}</div>`:journalEmpty("No photographs are currently assigned to this family journal.",`addDiscoveryFor('photo','${safeText(family)}')`),{number:"03"})}
+      ${journalSection("journal-documents","Documents & sources",sources||journalEmpty("No documents or sources are assigned yet.",`addDiscoveryFor('source','${safeText(family)}')`),{number:"04"})}
+      ${journalSection("journal-places","Maps & places",places||journalEmpty("No places are assigned yet.",`addDiscoveryFor('place','${safeText(family)}')`),{number:"05"})}
+      ${journalSection("journal-stories","Family stories",stories||journalEmpty("No family story has been written yet.",`addDiscoveryFor('story','${safeText(family)}')`),{number:"06"})}
+      ${journalSection("journal-legacy","What They Passed On",`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(journal.legacy||"This section is waiting for documented records and clearly identified family memories.")}</p></div>`,{number:"07",wide:true})}
+    </div>
+  </article>`;
+  history.replaceState(null,"",`#family/${family.toLowerCase()}`);
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+// ANCESTOR PAGE RENDERING BOUNDARY
+// data-era selects a reusable visual treatment; content remains status-labelled data.
+function openAncestorPage(id){
+  const ancestor=ancestorRecords[id],box=document.getElementById("familyDetail");if(!ancestor||!box)return;
+  const photos=archiveData.photos.filter(p=>p.people?.includes(ancestor.name));
+  box.innerHTML=`<article class="ancestor-page" data-era="${safeText(ancestor.era)}">
+    <nav class="journal-breadcrumbs" aria-label="Ancestor navigation"><button onclick="renderFamilyJournal('${safeText(ancestor.family)}')">${safeText(ancestor.family)} journal</button><span aria-hidden="true">/</span><span aria-current="page">${safeText(ancestor.name)}</span></nav>
+    <header class="ancestor-hero"><div class="ancestor-portrait" role="img" aria-label="Portrait placeholder for ${safeText(ancestor.name)}"><span aria-hidden="true">${safeText(ancestor.name.split(" ").map(x=>x[0]).join(""))}</span><small>${safeText(ancestor.portrait)}</small></div><div>${researchLabel("Documented")}<p class="ancestor-kicker">Ancestor journal</p><h3>${safeText(ancestor.name)}</h3><p class="ancestor-dates">${safeText(ancestor.lifeDates)}</p><p>${safeText(ancestor.narrative)}</p></div></header>
+    <div class="ancestor-page-grid">
+      ${journalSection("documented-facts","Documented facts",`<dl class="fact-list">${ancestor.facts.map(([term,value])=>`<div><dt>${safeText(term)}</dt><dd>${safeText(value)}</dd></div>`).join("")}</dl>`,{number:"01"})}
+      ${journalSection("ancestor-story","Narrative story",`<div class="story-paper">${researchLabel("Documented")}<p>${safeText(ancestor.narrative)}</p></div>`,{number:"02"})}
+      ${journalSection("ancestor-timeline","Timeline",`<ol class="journal-timeline">${ancestor.timeline.map(e=>`<li><time>${safeText(e.date)}</time><div>${researchLabel(e.status)}<h4>${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></div></li>`).join("")}</ol>`,{number:"03"})}
+      ${journalSection("ancestor-places","Places",ancestor.places.map(p=>`<article class="journal-record">${researchLabel(p.status)}<h4>${safeText(p.name)}</h4><p>${safeText(p.detail)}</p></article>`).join(""),{number:"04"})}
+      ${journalSection("ancestor-sources","Records & source citations",ancestor.sources.map(s=>`<article class="journal-record">${researchLabel(s.status)}<h4>${safeText(s.title)}</h4><p>${safeText(s.detail)}</p></article>`).join(""),{number:"05"})}
+      ${journalSection("ancestor-photos","Photographs",photos.length?`<div class="journal-media-grid">${photos.map(p=>`<article class="journal-media-card"><img src="${p.image}" alt="${safeText(p.title||ancestor.name)}"><strong>${safeText(p.title)}</strong></article>`).join("")}</div>`:journalEmpty("No photograph has been identified as Theodor Zahner.",`addDiscoveryFor('photo','${safeText(ancestor.family)}')`),{number:"06"})}
+      ${journalSection("historical-context","Historical context",`<div class="context-note">${researchLabel("Historical Context")}<p>${safeText(ancestor.historicalContext)}</p></div>`,{number:"07"})}
+      ${journalSection("research-questions","Unresolved research questions",`<ul class="question-list">${ancestor.questions.map(q=>`<li>${researchLabel("Research Question")}<span>${safeText(q)}</span></li>`).join("")}</ul>`,{number:"08"})}
+      ${journalSection("ancestor-legacy","What They Passed On",`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(ancestor.legacy)}</p></div>`,{number:"09",wide:true})}
+    </div>
+  </article>`;
+  history.replaceState(null,"",`#ancestor/${id}`);
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function initFamilies(){
   const app=document.getElementById("familiesApp");if(!app)return;
   app.innerHTML=`<div class="import-banner"><h3>Working tree imported</h3><p>The names and relationships taken from the screenshots are starting points only. Every imported connection is marked Possible or Placeholder until supporting records are attached.</p></div>
@@ -495,8 +602,14 @@ function initFamilies(){
     return `<button class="record-card" onclick="showFamily('${f}')"><small>${f}${f==="Blackwell"?" · Family Unit 1 complete":""}</small><h3>${f==="Blackwell"?"The Blackwell Household":s[0]}</h3><p>${f==="Blackwell"?"Brad, Rachel, Brody, and Vance — one complete household chapter.":s[1]}</p><p>${g.people} people · ${g.generations} generations · ${g.unconfirmed} awaiting confirmation</p></button>`
   }).join("")}</div><div id="familyDetail"></div>`;
 }
+function showFamilyIndex(){
+  initFamilies();
+  history.replaceState(null,"","#families");
+  document.getElementById("familiesApp")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
 function showFamily(f){
   const people=familyPeople(f),rels=familyRelationships(f),g=gapStats(f),s=familySummary(f),box=document.getElementById("familyDetail");
+  if(f==="Zahner"){renderFamilyJournal(f);return;}
   if(f==="Blackwell"){
     const profiles=[
       {role:"Father · Husband · Collector of experiences",name:"Bradley Todd Blackwell",life:"Born 26 May 1975",summary:"Brad has always been drawn to machines, motion, challenge, and the experiences they make possible.",bio:`As a young man, Brad worked in motorcycle shops and landscaping before moving into industrial steel work. He became a union vice president and later entered marina engineering and maintenance, eventually serving as Regional Manager of Engineering and Maintenance for the Inland Region of Suntex Marinas.
@@ -794,7 +907,9 @@ let lastTouchActivation=0;
 function activateRoomControl(control){
   if(!control)return;
   const key=control.dataset.room || (control.dataset.family ? "families" : "");
-  if(key)openRoom(key);
+  if(!key)return;
+  openRoom(key);
+  if(control.dataset.family)setTimeout(()=>showFamily(control.dataset.family),80);
 }
 
 document.addEventListener("click",event=>{
@@ -822,12 +937,18 @@ document.getElementById("backButton").addEventListener("click",()=>{
 });
 const hash=location.hash.slice(1);
 if(rooms[hash])openRoom(hash);
+else if(hash.startsWith("family/")){
+  const family=archiveData.families.find(f=>f.toLowerCase()===hash.slice(7).toLowerCase());
+  if(family){openRoom("families");setTimeout(()=>showFamily(family),80)}
+}else if(hash.startsWith("ancestor/")&&ancestorRecords[hash.slice(9)]){
+  openRoom("families");setTimeout(()=>openAncestorPage(hash.slice(9)),80);
+}
 
 // Homepage family-map invitation: reuse the existing family navigation behavior.
 document.querySelectorAll("[data-map-family]").forEach((button) => {
   button.addEventListener("click", () => {
     const family = button.dataset.mapFamily;
-    const target = [...document.querySelectorAll(".family-line [data-family]")]
+    const target = [...document.querySelectorAll(".journal-shelf [data-family]")]
       .find((candidate) => candidate.dataset.family === family);
     if (target) target.click();
   });
