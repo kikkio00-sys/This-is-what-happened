@@ -12,6 +12,7 @@ The script is intentionally conservative:
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 import re
 from pathlib import Path
@@ -78,7 +79,16 @@ document.querySelectorAll("[data-map-family]").forEach((button) => {
 def decode_data_uri(match: re.Match[str]) -> str:
     kind = match.group("kind").lower()
     raw = re.sub(r"\s+", "", match.group("data"))
-    payload = base64.b64decode(raw)
+    # Some generated data URIs omit trailing padding. Restore it before decoding.
+    raw += "=" * (-len(raw) % 4)
+    try:
+        payload = base64.b64decode(raw, validate=False)
+    except (binascii.Error, ValueError) as exc:
+        raise RuntimeError(
+            f"Could not decode embedded {kind} image near character {match.start()}: {exc}"
+        ) from exc
+    if not payload:
+        raise RuntimeError(f"Embedded {kind} image near character {match.start()} decoded to zero bytes.")
     digest = hashlib.sha256(payload).hexdigest()[:12]
     extension = {"jpeg": "jpg", "jpg": "jpg", "svg+xml": "svg"}.get(kind, kind)
     ASSETS.mkdir(parents=True, exist_ok=True)
@@ -118,8 +128,8 @@ def main() -> None:
     js = DATA_URI_RE.sub(decode_data_uri, js)
 
     # Replace embedded blocks with external maintainable files.
-    html = STYLE_RE.sub('', html)
-    html = SCRIPT_RE.sub('', html)
+    html = STYLE_RE.sub("", html)
+    html = SCRIPT_RE.sub("", html)
     if 'href="styles.css"' not in html:
         html = html.replace("</head>", '  <link rel="stylesheet" href="styles.css">\n</head>', 1)
     if 'src="app.js"' not in html:
