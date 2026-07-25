@@ -260,8 +260,8 @@ discovery:{k:"Research Desk",t:"Add a discovery",i:"Enter information once, revi
 
 const entrance=document.getElementById("entrance"),room=document.getElementById("room"),inventory=document.getElementById("inventory");
 refreshCounts();
-document.getElementById("inventoryHandle").onclick=()=>inventory.classList.add("open");
-document.getElementById("closeInventory").onclick=()=>inventory.classList.remove("open");
+document.getElementById("inventoryHandle").onclick=()=>{inventory.classList.add("open");document.getElementById("inventoryHandle").setAttribute("aria-expanded","true")};
+document.getElementById("closeInventory").onclick=()=>{inventory.classList.remove("open");document.getElementById("inventoryHandle").setAttribute("aria-expanded","false")};
 
 
 
@@ -794,7 +794,9 @@ let lastTouchActivation=0;
 function activateRoomControl(control){
   if(!control)return;
   const key=control.dataset.room || (control.dataset.family ? "families" : "");
-  if(key)openRoom(key);
+  if(!key)return;
+  openRoom(key);
+  if(control.dataset.family)setTimeout(()=>showFamily(control.dataset.family),80);
 }
 
 document.addEventListener("click",event=>{
@@ -827,7 +829,7 @@ if(rooms[hash])openRoom(hash);
 document.querySelectorAll("[data-map-family]").forEach((button) => {
   button.addEventListener("click", () => {
     const family = button.dataset.mapFamily;
-    const target = [...document.querySelectorAll(".family-line [data-family]")]
+    const target = [...document.querySelectorAll(".journal-shelf [data-family]")]
       .find((candidate) => candidate.dataset.family === family);
     if (target) target.click();
   });
