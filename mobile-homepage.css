@@ -1,0 +1,169 @@
+/* Mobile-first homepage cleanup.
+   Removes legacy card artwork containing baked-in wording and replaces it
+   with lightweight museum-style CSS backgrounds that remain readable on phones. */
+
+.entrance{
+  padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));
+}
+
+.entrance-header{
+  align-items:flex-start;
+  gap:9px;
+  padding:2px 2px 5px;
+}
+
+.monogram{
+  width:34px;
+  height:34px;
+  font-size:20px;
+}
+
+.entrance-header h1{
+  font-size:clamp(28px,10vw,43px);
+  line-height:.96;
+}
+
+.entrance-header p{
+  font-size:7px;
+  letter-spacing:.13em;
+}
+
+/* The map is the invitation. Hide the older duplicate text navigation on phones. */
+.family-line{display:none}
+
+.family-map{
+  width:100%;
+  margin:8px auto 10px;
+}
+
+.family-map-title{
+  font-size:9px;
+  margin-bottom:7px;
+}
+
+.family-map-stage{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:13px 10px 30px;
+  border-radius:15px;
+}
+
+.family-map-stage:before,
+.family-map-stage:after,
+.family-map-branch:after{
+  display:none;
+}
+
+.family-map-branch{
+  min-height:48px;
+  padding:10px 7px;
+  font-size:15px;
+  touch-action:manipulation;
+}
+
+.family-map-root{
+  bottom:7px;
+  font-size:10px;
+}
+
+.object-grid{
+  width:100%;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:none;
+  gap:9px;
+  margin:0 auto;
+  flex:0 0 auto;
+}
+
+.object-card{
+  min-height:118px;
+  display:grid;
+  place-items:center;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 18% 18%,rgba(215,179,111,.18),transparent 28%),
+    linear-gradient(145deg,#25180f,#0d0906 72%);
+  box-shadow:0 10px 24px rgba(0,0,0,.32);
+  touch-action:manipulation;
+}
+
+/* Remove all legacy imagery because several source images contain baked-in titles. */
+.object-card img{display:none}
+
+.object-card:before{
+  content:"";
+  position:absolute;
+  inset:9px;
+  border:1px solid rgba(211,171,98,.18);
+  border-radius:10px;
+  pointer-events:none;
+}
+
+.object-card:after{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(255,255,255,.035),transparent 32%),
+    linear-gradient(180deg,transparent,rgba(0,0,0,.34));
+}
+
+.object-card span{
+  position:relative;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  width:100%;
+  padding:16px 10px;
+  text-shadow:0 2px 4px #000;
+}
+
+.object-card strong{
+  font-size:clamp(22px,7vw,30px);
+  line-height:1.02;
+  overflow-wrap:normal;
+}
+
+.object-card small{
+  font-size:clamp(12px,3.7vw,15px);
+  line-height:1.15;
+  margin-top:7px;
+}
+
+.object-card:nth-child(1){background:linear-gradient(145deg,#2b2118,#100b07 72%)}
+.object-card:nth-child(2){background:linear-gradient(145deg,#273027,#0d120e 72%)}
+.object-card:nth-child(3){background:linear-gradient(145deg,#2d2520,#120c09 72%)}
+.object-card:nth-child(4){background:linear-gradient(145deg,#29251b,#100d08 72%)}
+.object-card:nth-child(5){background:linear-gradient(145deg,#2a1f22,#10090c 72%)}
+.object-card:nth-child(6){background:linear-gradient(145deg,#292118,#100c08 72%)}
+
+.discovery-card{
+  grid-column:1/-1;
+  min-height:108px;
+  background:
+    radial-gradient(circle at 50% 0,rgba(195,152,80,.2),transparent 48%),
+    linear-gradient(145deg,#2b1d12,#0d0906 75%);
+}
+
+.discovery-card strong{font-size:clamp(25px,7.5vw,34px)}
+
+.inventory-handle{
+  width:100%;
+  min-height:44px;
+  margin-top:9px;
+}
+
+@media(min-width:560px){
+  .family-map-stage{grid-template-columns:repeat(4,minmax(0,1fr));padding:18px 10px 32px}
+  .family-map-branch{font-size:14px}
+  .object-card{min-height:142px}
+}
+
+@media(min-width:820px){
+  .entrance{padding-left:18px;padding-right:18px}
+  .family-line{display:grid}
+  .family-map{width:min(100%,840px)}
+  .family-map-stage{grid-template-columns:repeat(4,minmax(0,1fr));padding:20px 12px 34px}
+  .object-grid{width:min(100%,840px);grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+  .object-card{min-height:150px}
+  .object-card strong{font-size:clamp(24px,3vw,34px)}
+  .object-card small{font-size:15px}
+  .inventory-handle{width:min(100%,840px)}
+}
