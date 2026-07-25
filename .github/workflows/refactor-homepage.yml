@@ -3,9 +3,8 @@ name: Refactor oversized homepage
 on:
   push:
     branches:
-      - agent/homepage-family-map
+      - main
     paths:
-      - tools/refactor_single_file.py
       - .github/workflows/refactor-homepage.yml
   workflow_dispatch:
 
@@ -14,10 +13,9 @@ permissions:
 
 jobs:
   refactor:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out feature branch
+      - name: Check out protected feature branch
         uses: actions/checkout@v4
         with:
           ref: agent/homepage-family-map
@@ -42,7 +40,7 @@ jobs:
           ! grep -R -q 'data:image/' index.html styles.css app.js
           git diff --stat
 
-      - name: Commit refactored source
+      - name: Commit refactored source to feature branch
         shell: bash
         run: |
           set -euo pipefail
