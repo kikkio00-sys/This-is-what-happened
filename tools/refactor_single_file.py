@@ -12,10 +12,10 @@ The script is intentionally conservative:
 from __future__ import annotations
 
 import base64
-import binascii
 import hashlib
 import re
 from pathlib import Path
+from urllib.parse import unquote_to_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
@@ -26,7 +26,8 @@ ASSETS = ROOT / "assets"
 STYLE_RE = re.compile(r"<style(?:\s[^>]*)?>(.*?)</style>", re.IGNORECASE | re.DOTALL)
 SCRIPT_RE = re.compile(r"<script(?![^>]*\bsrc=)(?:\s[^>]*)?>(.*?)</script>", re.IGNORECASE | re.DOTALL)
 DATA_URI_RE = re.compile(
-    r"data:image/(?P<kind>png|jpe?g|gif|webp|svg\+xml);base64,(?P<data>[A-Za-z0-9+/=\r\n]+)",
+    r"data:image/(?P<kind>png|jpe?g|gif|webp|svg\+xml)"
+    r"(?P<meta>(?:;[^,\"')>]*)?),(?P<data>[^\"')>]+)",
     re.IGNORECASE,
 )
 
@@ -78,17 +79,25 @@ document.querySelectorAll("[data-map-family]").forEach((button) => {
 
 def decode_data_uri(match: re.Match[str]) -> str:
     kind = match.group("kind").lower()
-    raw = re.sub(r"\s+", "", match.group("data"))
-    # Some generated data URIs omit trailing padding. Restore it before decoding.
-    raw += "=" * (-len(raw) % 4)
+    meta = (match.group("meta") or "").lower()
+    encoded = match.group("data").strip()
+
     try:
-        payload = base64.b64decode(raw, validate=False)
-    except (binascii.Error, ValueError) as exc:
+        if ";base64" in meta:
+            raw = re.sub(r"\s+", "", encoded)
+            raw += "=" * (-len(raw) % 4)
+            payload = base64.b64decode(raw, validate=False)
+        else:
+            payload = unquote_to_bytes(encoded)
+    except Exception as exc:
+        preview = encoded[:80].replace("\n", " ")
         raise RuntimeError(
-            f"Could not decode embedded {kind} image near character {match.start()}: {exc}"
+            f"Could not decode embedded image ({kind}{meta}); payload begins {preview!r}"
         ) from exc
+
     if not payload:
         raise RuntimeError(f"Embedded {kind} image near character {match.start()} decoded to zero bytes.")
+
     digest = hashlib.sha256(payload).hexdigest()[:12]
     extension = {"jpeg": "jpg", "jpg": "jpg", "svg+xml": "svg"}.get(kind, kind)
     ASSETS.mkdir(parents=True, exist_ok=True)
@@ -122,12 +131,10 @@ def main() -> None:
     css = "\n\n".join(part.strip() for part in styles if part.strip())
     js = "\n\n".join(part.strip() for part in scripts if part.strip())
 
-    # Decode embedded images everywhere before writing the smaller source files.
     html = DATA_URI_RE.sub(decode_data_uri, html)
     css = DATA_URI_RE.sub(decode_data_uri, css)
     js = DATA_URI_RE.sub(decode_data_uri, js)
 
-    # Replace embedded blocks with external maintainable files.
     html = STYLE_RE.sub("", html)
     html = SCRIPT_RE.sub("", html)
     if 'href="styles.css"' not in html:
@@ -135,7 +142,6 @@ def main() -> None:
     if 'src="app.js"' not in html:
         html = html.replace("</body>", '  <script src="app.js"></script>\n</body>', 1)
 
-    # Approved visitor-facing terminology. Internal keys such as families/album remain unchanged.
     html = html.replace("Family Assembly", "Meet the Family").replace("Album", "Photographs")
     js = js.replace("Family Assembly", "Meet the Family").replace("Album", "Photographs")
 
