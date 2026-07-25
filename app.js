@@ -546,57 +546,98 @@ function familyJournalRecords(family){
   const records=familyRecords(family);
   return {...records,people:familyPeople(family)};
 }
-function renderFamilyJournal(family){
-  const journal=familyJournals[family],box=document.getElementById("familyDetail");
-  if(!journal||!box)return;
-  const records=familyJournalRecords(family);
+const scrapbookState={kind:null,id:null,page:0};
+const scrapbookMedia=window.matchMedia("(max-width: 800px) and (orientation: portrait)");
+function scrapbookSinglePage(){return scrapbookMedia.matches}
+function scrapbookCard(title,body,status=""){
+  return `<section class="scrapbook-card">${status?researchLabel(status):""}<h4>${safeText(title)}</h4>${body}</section>`;
+}
+function scrapbookEmpty(message,status="Research Question"){
+  return `<div class="scrapbook-empty">${researchLabel(status)}<p>${safeText(message)}</p></div>`;
+}
+function scrapbookList(items,render,empty){return items.length?items.map(render).join(""):scrapbookEmpty(empty)}
+function familyScrapbookPages(family){
+  const journal=familyJournals[family],records=familyJournalRecords(family);
   const ancestors=journal.ancestorIds.map(id=>ancestorRecords[id]).filter(Boolean);
-  const ancestorIndex=ancestors.length?ancestors.map(a=>`<button class="ancestor-index-card" onclick="openAncestorPage('${a.id}')"><span class="ancestor-monogram" aria-hidden="true">${safeText(a.name.charAt(0))}</span><span><small>${researchLabel(a.status)}</small><strong>${safeText(a.name)}</strong><em>${safeText(a.lifeDates)}</em></span><span aria-hidden="true">→</span></button>`).join(""):journalEmpty("No ancestor page has been documented for this family line yet.");
+  const ancestorIndex=scrapbookList(ancestors,a=>`<button class="ancestor-index-card" onclick="openAncestorPage('${a.id}')"><span class="ancestor-monogram" aria-hidden="true">${safeText(a.name.charAt(0))}</span><span>${researchLabel(a.status)}<strong>${safeText(a.name)}</strong><em>${safeText(a.lifeDates)}</em></span><span aria-hidden="true">→</span></button>`,"No ancestor page has been documented for this family line yet.");
   const timeline=ancestors.flatMap(a=>a.timeline||[]);
-  const photos=records.photos.slice(0,6).map(p=>`<article class="journal-media-card">${p.image?`<img src="${p.image}" alt="${safeText(p.title||"Family photograph")}">`:""}<strong>${safeText(p.title)}</strong><span>${safeText(p.date||"Date not identified")}</span></article>`).join("");
-  const sources=records.sources.slice(0,8).map(s=>`<article class="journal-record"><div>${researchLabel(s.status)}<h4>${safeText(s.title)}</h4><p>${safeText(s.date||s.source||"Source details are preserved in the archive.")}</p></div></article>`).join("");
-  const places=records.places.slice(0,8).map(p=>`<article class="journal-record"><div>${researchLabel(p.status)}<h4>${safeText(p.name)}</h4><p>${safeText(p.event||p.evidence||"")}</p></div></article>`).join("");
-  const stories=records.stories.slice(0,8).map(s=>`<article class="journal-record"><div>${researchLabel(s.status)}<h4>${safeText(s.title)}</h4><p>${safeText(s.details||"This story is named in the archive but has not yet been written.")}</p></div></article>`).join("");
-  box.innerHTML=`<article class="family-journal-shell" data-family="${safeText(family)}" data-era="${safeText(journal.era)}">
-    <nav class="journal-breadcrumbs" aria-label="Journal navigation"><button onclick="showFamilyIndex()">All family journals</button><span aria-hidden="true">/</span><span aria-current="page">${safeText(family)}</span></nav>
-    <header class="journal-open-cover"><div class="journal-cover-mark" aria-hidden="true">${safeText(family.charAt(0))}</div><div><small>${safeText(journal.volume)} · ${safeText(journal.status)}</small><h3>The ${safeText(family)} Family Journal</h3><p>${safeText(journal.introduction||familySummary(family)?.[1]||"")}</p><div class="journal-cover-actions"><button onclick="document.getElementById('ancestor-index')?.scrollIntoView({behavior:'smooth'})">Open the ancestor index</button><button onclick="addDiscoveryFor('source','${safeText(family)}')">Add a record</button></div></div></header>
-    <div class="journal-page-grid">
-      ${journalSection("ancestor-index","Ancestor index",`<div class="ancestor-index">${ancestorIndex}</div>`,{number:"01",wide:true})}
-      ${journalSection("family-timeline","Family timeline",timeline.length?`<ol class="journal-timeline">${timeline.map(e=>`<li><time>${safeText(e.date)}</time><div>${researchLabel(e.status)}<h4>${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></div></li>`).join("")}</ol>`:journalEmpty("No documented timeline events have been added yet."),{number:"02"})}
-      ${journalSection("journal-photographs","Photographs",photos?`<div class="journal-media-grid">${photos}</div>`:journalEmpty("No photographs are currently assigned to this family journal.",`addDiscoveryFor('photo','${safeText(family)}')`),{number:"03"})}
-      ${journalSection("journal-documents","Documents & sources",sources||journalEmpty("No documents or sources are assigned yet.",`addDiscoveryFor('source','${safeText(family)}')`),{number:"04"})}
-      ${journalSection("journal-places","Maps & places",places||journalEmpty("No places are assigned yet.",`addDiscoveryFor('place','${safeText(family)}')`),{number:"05"})}
-      ${journalSection("journal-stories","Family stories",stories||journalEmpty("No family story has been written yet.",`addDiscoveryFor('story','${safeText(family)}')`),{number:"06"})}
-      ${journalSection("journal-legacy","What They Passed On",`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(journal.legacy||"This section is waiting for documented records and clearly identified family memories.")}</p></div>`,{number:"07",wide:true})}
-    </div>
-  </article>`;
-  history.replaceState(null,"",`#family/${family.toLowerCase()}`);
-  box.scrollIntoView({behavior:"smooth",block:"start"});
+  const recordList=(items,title,empty)=>scrapbookCard(title,scrapbookList(items,x=>`<article class="journal-record">${researchLabel(x.status)}<h4>${safeText(x.name||x.title)}</h4><p>${safeText(x.event||x.details||x.evidence||x.date||x.source||"")}</p></article>`,empty));
+  const photos=scrapbookList(records.photos.slice(0,12),p=>`<article class="journal-media-card">${p.image?`<img src="${p.image}" alt="${safeText(p.title||"Family photograph")}">`:""}<strong>${safeText(p.title)}</strong><span>${safeText(p.date||"Date not identified")}</span></article>`,"No photographs are currently assigned to this family journal.");
+  return [
+    {title:`The ${family} Family Journal`,html:`<header class="scrapbook-cover"><small>${safeText(journal.volume)} · ${safeText(journal.status)}</small><h3>${safeText(family)}</h3><p>${safeText(journal.introduction||"")}</p></header>`},
+    {title:"Ancestor index",html:`<div class="ancestor-index">${ancestorIndex}</div>`},
+    {title:"Family timeline",html:scrapbookList(timeline,e=>`<article class="journal-record">${researchLabel(e.status)}<h4>${safeText(e.date)} · ${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></article>`,"No documented timeline events have been added yet.")},
+    {title:"Photographs",html:`<div class="journal-media-grid">${photos}</div>`},
+    {title:"Documents & sources",html:recordList(records.sources.slice(0,12),"Archive records","No documents or sources are assigned yet.")},
+    {title:"Maps & places",html:recordList(records.places.slice(0,12),"Places","No places are assigned yet.")},
+    {title:"Family stories",html:recordList(records.stories.slice(0,12),"Stories","No family story has been written yet.")},
+    {title:"What They Passed On",html:`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(journal.legacy||"")}</p></div>`}
+  ];
 }
-
-// ANCESTOR PAGE RENDERING BOUNDARY
-// data-era selects a reusable visual treatment; content remains status-labelled data.
-function openAncestorPage(id){
-  const ancestor=ancestorRecords[id],box=document.getElementById("familyDetail");if(!ancestor||!box)return;
+function ancestorScrapbookPages(ancestor){
   const photos=archiveData.photos.filter(p=>p.people?.includes(ancestor.name));
-  box.innerHTML=`<article class="ancestor-page" data-era="${safeText(ancestor.era)}">
-    <nav class="journal-breadcrumbs" aria-label="Ancestor navigation"><button onclick="renderFamilyJournal('${safeText(ancestor.family)}')">${safeText(ancestor.family)} journal</button><span aria-hidden="true">/</span><span aria-current="page">${safeText(ancestor.name)}</span></nav>
-    <header class="ancestor-hero"><div class="ancestor-portrait" role="img" aria-label="Portrait placeholder for ${safeText(ancestor.name)}"><span aria-hidden="true">${safeText(ancestor.name.split(" ").map(x=>x[0]).join(""))}</span><small>${safeText(ancestor.portrait)}</small></div><div>${researchLabel(ancestor.status)}<p class="ancestor-kicker">Ancestor journal</p><h3>${safeText(ancestor.name)}</h3><p class="ancestor-dates">${safeText(ancestor.lifeDates)}</p><p>${safeText(ancestor.narrative)}</p></div></header>
-    <div class="ancestor-page-grid">
-      ${journalSection("documented-facts","Documented facts",`<dl class="fact-list">${ancestor.facts.map(([term,value])=>`<div><dt>${safeText(term)}</dt><dd>${safeText(value)}</dd></div>`).join("")}</dl>`,{number:"01"})}
-      ${journalSection("ancestor-story","Narrative story",`<div class="story-paper">${researchLabel(ancestor.narrativeStatus)}<p>${safeText(ancestor.narrative)}</p></div>`,{number:"02"})}
-      ${journalSection("ancestor-timeline","Timeline",`<ol class="journal-timeline">${ancestor.timeline.map(e=>`<li><time>${safeText(e.date)}</time><div>${researchLabel(e.status)}<h4>${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></div></li>`).join("")}</ol>`,{number:"03"})}
-      ${journalSection("ancestor-places","Places",ancestor.places.map(p=>`<article class="journal-record">${researchLabel(p.status)}<h4>${safeText(p.name)}</h4><p>${safeText(p.detail)}</p></article>`).join(""),{number:"04"})}
-      ${journalSection("ancestor-sources","Records & source citations",ancestor.sources.map(s=>`<article class="journal-record">${researchLabel(s.status)}<h4>${safeText(s.title)}</h4><p>${safeText(s.detail)}</p></article>`).join(""),{number:"05"})}
-      ${journalSection("ancestor-photos","Photographs",photos.length?`<div class="journal-media-grid">${photos.map(p=>`<article class="journal-media-card"><img src="${p.image}" alt="${safeText(p.title||ancestor.name)}"><strong>${safeText(p.title)}</strong></article>`).join("")}</div>`:journalEmpty(`No photograph has been identified as ${ancestor.name}.`,`addDiscoveryFor('photo','${safeText(ancestor.family)}','','${safeText(ancestor.name)}')`),{number:"06"})}
-      ${journalSection("historical-context","Historical context",ancestor.historicalContext?`<div class="context-note">${researchLabel("Historical Context")}<p>${safeText(ancestor.historicalContext)}</p></div>`:journalEmpty("Historical context has not yet been added.","","Historical Context"),{number:"07"})}
-      ${journalSection("research-questions","Unresolved research questions",`<ul class="question-list">${ancestor.questions.map(q=>`<li>${researchLabel("Research Question")}<span>${safeText(q)}</span></li>`).join("")}</ul>`,{number:"08"})}
-      ${journalSection("ancestor-legacy","What They Passed On",`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(ancestor.legacy)}</p></div>`,{number:"09",wide:true})}
-    </div>
-  </article>`;
-  history.replaceState(null,"",`#ancestor/${id}`);
-  box.scrollIntoView({behavior:"smooth",block:"start"});
+  const timeline=scrapbookList(ancestor.timeline,e=>`<article class="journal-record">${researchLabel(e.status)}<h4>${safeText(e.date)} · ${safeText(e.title)}</h4><p>${safeText(e.detail)}</p></article>`,"No timeline events are available.");
+  const places=scrapbookList(ancestor.places,p=>`<article class="journal-record">${researchLabel(p.status)}<h4>${safeText(p.name)}</h4><p>${safeText(p.detail)}</p></article>`,"No places are available.");
+  const sources=scrapbookList(ancestor.sources,x=>`<article class="journal-record">${researchLabel(x.status)}<h4>${safeText(x.title)}</h4><p>${safeText(x.detail)}</p></article>`,"No sources are available.");
+  const questions=scrapbookList(ancestor.questions,q=>`<li>${researchLabel("Research Question")}<span>${safeText(q)}</span></li>`,"No unresolved questions are recorded.");
+  const photoGrid=photos.length?`<div class="journal-media-grid">${photos.map(p=>`<article class="journal-media-card"><img src="${p.image}" alt="${safeText(p.title||ancestor.name)}"><strong>${safeText(p.title)}</strong></article>`).join("")}</div>`:scrapbookEmpty(`No photograph has been identified as ${ancestor.name}.`);
+  return [
+    {title:"Life",html:`<header class="ancestor-summary">${researchLabel(ancestor.status)}<p class="ancestor-kicker">Ancestor journal</p><h3>${safeText(ancestor.name)}</h3><p class="ancestor-dates">${safeText(ancestor.lifeDates)}</p><p>${safeText(ancestor.narrative)}</p></header>`},
+    {title:"Documented facts",html:`<dl class="fact-list">${ancestor.facts.map(([term,value])=>`<div><dt>${safeText(term)}</dt><dd>${safeText(value)}</dd></div>`).join("")}</dl>`},
+    {title:"Places",html:places}, {title:"Timeline",html:timeline},
+    {title:"Photographs",html:photoGrid}, {title:"Documents",html:sources},
+    {title:"Historical context",html:ancestor.historicalContext?`<div class="context-note">${researchLabel("Historical Context")}<p>${safeText(ancestor.historicalContext)}</p></div>`:scrapbookEmpty("Historical context has not yet been added.","Historical Context")},
+    {title:"Context notes",html:scrapbookEmpty("No additional historical context is documented for this ancestor.","Historical Context")},
+    {title:"Sources",html:sources}, {title:"Unresolved questions",html:`<ul class="question-list">${questions}</ul>`},
+    {title:"What They Passed On",html:`<div class="legacy-note">${researchLabel("Research Question")}<p>${safeText(ancestor.legacy)}</p></div>`},
+    {title:"Continue the journal",html:`${scrapbookEmpty("Future records and family memories can be added through the Research Desk.")}<button class="journal-link" onclick="addDiscoveryFor('source','${safeText(ancestor.family)}','','${safeText(ancestor.name)}')">Add to this journal</button>`}
+  ];
 }
+function scrapbookUrl(kind,id,page){
+  const spread=Math.floor(page/2)+1;
+  return `#${kind}/${encodeURIComponent(id.toLowerCase())}/spread/${spread}/page/${page+1}`;
+}
+function parseScrapbookHash(){
+  const match=location.hash.match(/^#(family|ancestor)\/([^/]+)(?:\/spread\/(\d+)\/page\/(\d+))?$/);
+  return match?{kind:match[1],id:decodeURIComponent(match[2]),page:Math.max(0,(Number(match[4])||1)-1)}:null;
+}
+function renderScrapbook(kind,id,pages,requestedPage=0,historyMode="push"){
+  const box=document.getElementById("familyDetail");if(!box)return;
+  const max=pages.length-1,page=Math.min(Math.max(0,requestedPage),max),single=scrapbookSinglePage();
+  scrapbookState.kind=kind;scrapbookState.id=id;scrapbookState.page=page;
+  document.body.classList.add("scrapbook-open");
+  const visible=single?[page]:[page-(page%2),Math.min(page-(page%2)+1,max)].filter((x,i,a)=>a.indexOf(x)===i);
+  const label=single?`Page ${page+1} of ${pages.length}`:`Pages ${visible.map(x=>x+1).join("–")} of ${pages.length}`;
+  box.innerHTML=`<article class="scrapbook" aria-label="${safeText(pages[0].title)} scrapbook"><header class="scrapbook-toolbar"><button class="scrapbook-close" type="button" aria-label="${kind==="ancestor"?"Return to family journal":"Return to archive homepage"}">${kind==="ancestor"?"← Journal":"← Home"}</button><div><small>${kind==="ancestor"?"Ancestor scrapbook":"Family scrapbook"}</small><h3>${safeText(kind==="ancestor"?ancestorRecords[id].name:familyJournals[id].family)}</h3></div><output class="scrapbook-indicator" aria-live="polite">${label}</output></header><div class="scrapbook-pages" data-mode="${single?"single":"facing"}">${visible.map((x,i)=>`<section class="scrapbook-page" aria-label="Page ${x+1}: ${safeText(pages[x].title)}"><div class="scrapbook-page-heading"><span>${String(x+1).padStart(2,"0")}</span><h4>${safeText(pages[x].title)}</h4></div><div class="scrapbook-page-scroll" tabindex="0">${pages[x].html}</div></section>`).join("")}</div><nav class="scrapbook-controls" aria-label="Scrapbook page controls"><button type="button" data-page="previous" aria-label="Previous ${single?"page":"spread"}" ${visible.includes(0)?"disabled":""}>← Previous</button><span class="sr-only">${label}</span><button type="button" data-page="next" aria-label="Next ${single?"page":"spread"}" ${visible.includes(max)?"disabled":""}>Next →</button></nav></article>`;
+  box.querySelector(".scrapbook-close").onclick=()=>kind==="ancestor"?renderFamilyJournal(ancestorRecords[id].family,0,"push"):closeScrapbook();
+  box.querySelector('[data-page="previous"]').onclick=()=>changeScrapbookPage(single?page-1:Math.max(0,page-(page%2)-2));
+  box.querySelector('[data-page="next"]').onclick=()=>changeScrapbookPage(single?page+1:Math.min(max,page-(page%2)+2));
+  if(historyMode!=="none")history[historyMode==="replace"?"replaceState":"pushState"](null,"",scrapbookUrl(kind,id,page));
+}
+function changeScrapbookPage(page){
+  const {kind,id}=scrapbookState;
+  renderScrapbook(kind,id,kind==="family"?familyScrapbookPages(id):ancestorScrapbookPages(ancestorRecords[id]),page,"push");
+}
+function closeScrapbook(){document.body.classList.remove("scrapbook-open");history.pushState(null,"",location.pathname);roomView.classList.remove("active-view");entranceView.classList.add("active-view");}
+function renderFamilyJournal(family,page=0,historyMode="push"){
+  if(!familyJournals[family])return;renderScrapbook("family",family,familyScrapbookPages(family),page,historyMode);
+}
+function openAncestorPage(id,page=0,historyMode="push"){
+  const ancestor=ancestorRecords[id];if(!ancestor)return;renderScrapbook("ancestor",id,ancestorScrapbookPages(ancestor),page,historyMode);
+}
+function restoreScrapbookRoute(){
+  const route=parseScrapbookHash();if(!route)return false;
+  openRoom("families",false);
+  if(route.kind==="family"){
+    const family=archiveData.families.find(f=>f.toLowerCase()===route.id.toLowerCase());if(family)renderFamilyJournal(family,route.page,"none");
+  }else if(ancestorRecords[route.id])openAncestorPage(route.id,route.page,"none");
+  return true;
+}
+scrapbookMedia.addEventListener?.("change",()=>{
+  if(!scrapbookState.kind)return;
+  const {kind,id,page}=scrapbookState;
+  renderScrapbook(kind,id,kind==="family"?familyScrapbookPages(id):ancestorScrapbookPages(ancestorRecords[id]),page,"replace");
+});
 
 function initFamilies(){
   const app=document.getElementById("familiesApp");if(!app)return;
@@ -612,9 +653,8 @@ function showFamilyIndex(){
   document.getElementById("familiesApp")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function showFamily(f){
+  if(familyJournals[f]){renderFamilyJournal(f);return;}
   const people=familyPeople(f),rels=familyRelationships(f),g=gapStats(f),s=familySummary(f),box=document.getElementById("familyDetail");
-  history.replaceState(null,"",`#family/${f.toLowerCase()}`);
-  if(f==="Zahner"){renderFamilyJournal(f);return;}
   if(f==="Blackwell"){
     const profiles=[
       {role:"Father · Husband · Collector of experiences",name:"Bradley Todd Blackwell",life:"Born 26 May 1975",summary:"Brad has always been drawn to machines, motion, challenge, and the experiences they make possible.",bio:`As a young man, Brad worked in motorcycle shops and landscaping before moving into industrial steel work. He became a union vice president and later entered marina engineering and maintenance, eventually serving as Regional Manager of Engineering and Maintenance for the Inland Region of Suntex Marinas.
@@ -888,7 +928,7 @@ function renderMapRecords(places){
 const entranceView=document.getElementById("entrance");
 const roomView=document.getElementById("room");
 
-function openRoom(key){
+function openRoom(key,updateHistory=true){
   const d=rooms[key];
   if(!d || !entranceView || !roomView)return;
   document.getElementById("roomKicker").textContent=d.k;
@@ -898,7 +938,7 @@ function openRoom(key){
   entranceView.classList.remove("active-view");
   roomView.classList.add("active-view");
   document.body.style.overflowY="auto";
-  history.replaceState(null,"","#"+key);
+  if(updateHistory)history.replaceState(null,"","#"+key);
   window.scrollTo({top:0,behavior:"auto"});
   if(key==="families") setTimeout(initFamilies,50);
   if(key==="wanderings") setTimeout(initFamilyMap,180);
@@ -913,7 +953,7 @@ function activateRoomControl(control){
   if(!control)return;
   const key=control.dataset.room || (control.dataset.family ? "families" : "");
   if(!key)return;
-  openRoom(key);
+  openRoom(key,!control.dataset.family);
   if(control.dataset.family)setTimeout(()=>showFamily(control.dataset.family),80);
 }
 
@@ -941,13 +981,15 @@ document.getElementById("backButton").addEventListener("click",()=>{
   window.scrollTo({top:0,behavior:"auto"});
 });
 const hash=location.hash.slice(1);
-if(rooms[hash])openRoom(hash);
-else if(hash.startsWith("family/")){
-  const family=archiveData.families.find(f=>f.toLowerCase()===hash.slice(7).toLowerCase());
-  if(family){openRoom("families");setTimeout(()=>showFamily(family),80)}
-}else if(hash.startsWith("ancestor/")&&ancestorRecords[hash.slice(9)]){
-  openRoom("families");setTimeout(()=>openAncestorPage(hash.slice(9)),80);
-}
+if(!restoreScrapbookRoute()&&rooms[hash])openRoom(hash);
+window.addEventListener("popstate",()=>{
+  document.body.classList.remove("scrapbook-open");
+  scrapbookState.kind=null;scrapbookState.id=null;
+  const route=parseScrapbookHash();
+  if(route)restoreScrapbookRoute();
+  else if(rooms[location.hash.slice(1)])openRoom(location.hash.slice(1));
+  else{roomView.classList.remove("active-view");entranceView.classList.add("active-view");}
+});
 
 // Homepage family-map invitation: reuse the existing family navigation behavior.
 document.querySelectorAll("[data-map-family]").forEach((button) => {
