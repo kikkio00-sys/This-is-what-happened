@@ -1,0 +1,57 @@
+name: Refactor oversized homepage
+
+on:
+  push:
+    branches:
+      - agent/homepage-family-map
+    paths:
+      - tools/refactor_single_file.py
+      - .github/workflows/refactor-homepage.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/homepage-family-map
+          fetch-depth: 0
+
+      - name: Refactor single-file homepage
+        run: python tools/refactor_single_file.py
+
+      - name: Validate architecture and approved labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(wc -c < index.html)" -lt 1000000
+          grep -q 'href="styles.css"' index.html
+          grep -q 'src="app.js"' index.html
+          grep -q 'Meet the Family' index.html app.js
+          grep -q 'Photographs' index.html app.js
+          grep -q 'data-map-family="Zahner"' index.html
+          grep -q 'data-map-family="Downing"' index.html
+          grep -q 'data-map-family="Blackwell"' index.html
+          grep -q 'data-map-family="Barrett"' index.html
+          ! grep -R -q 'data:image/' index.html styles.css app.js
+          git diff --stat
+
+      - name: Commit refactored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html styles.css app.js assets
+          if git diff --cached --quiet; then
+            echo "No refactor changes were needed."
+            exit 0
+          fi
+          git commit -m "Refactor homepage into maintainable source files"
+          git push origin HEAD:agent/homepage-family-map
