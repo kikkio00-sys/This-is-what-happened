@@ -1,0 +1,2 @@
+import { describe, expect, it } from 'vitest';import { experiences } from '@/config/experiences';
+it('contains all required experiences',()=>{expect(experiences.map(e=>e.name)).toEqual(['Startup and Commissioning','Headquarters','Visible Privacy','Living Library','Opportunity Center','Accidental Wonders','This Is What Happened']);expect(experiences.every(e=>e.id&&e.route&&e.chief&&e.environment&&e.visibility)).toBe(true)});

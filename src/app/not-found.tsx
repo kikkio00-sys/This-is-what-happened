@@ -1,0 +1,1 @@
+import Link from 'next/link';export default function NotFound(){return <><h1>Page not found</h1><p>This LifeCove route is not available.</p><Link className="btn" href="/headquarters">Back to Headquarters</Link></>}

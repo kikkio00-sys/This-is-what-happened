@@ -1,0 +1,3 @@
+'use client';
+import Link from 'next/link';import { usePathname } from 'next/navigation';import { primaryNavigation } from '@/config/navigation';
+export function MainNavigation(){const path=usePathname();const items=primaryNavigation;return <><nav className="top-nav" aria-label="Primary navigation">{items.map(i=><Link key={i.id} href={i.route} aria-current={path===i.route?'page':undefined}>{i.name}</Link>)}</nav><nav className="bottom-nav" aria-label="Thumb reachable primary navigation">{items.slice(0,4).map(i=><Link key={i.id} href={i.route} aria-current={path===i.route?'page':undefined}>{i.name.replace('Visible ','')}</Link>)}</nav></>}

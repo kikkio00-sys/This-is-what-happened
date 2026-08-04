@@ -1,0 +1,1 @@
+export const commissioningSteps = ['Welcome to LifeCove','Meet Paul','Privacy Promise','What brings you here?','Available experiences','Connections overview','Readiness review','Enter Headquarters'] as const;

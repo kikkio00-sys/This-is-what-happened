@@ -1,0 +1,2 @@
+import { test, expect } from '@playwright/test';
+for (const route of ['/startup','/headquarters']) test(`basic accessibility smoke ${route}`,async({page})=>{await page.goto(route);await expect(page.locator('main#main-content')).toBeVisible();await expect(page.locator('h1')).toHaveCount(1);await expect(page.getByRole('link',{name:/skip to content/i})).toBeAttached();await page.keyboard.press('Tab');await expect(page.locator(':focus')).toBeVisible()});

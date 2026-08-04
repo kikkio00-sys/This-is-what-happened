@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Page(){return <><h1>This Is What Happened</h1><section className="card"><h2>Purpose</h2><p>A connected storytelling destination for lived records and narrative.</p><h2>Current status</h2><p>Prototype placeholder</p><h2>What belongs there</h2><p>Stories, context, timelines, and intentional narrative presentation.</p><h2>What does not belong there</h2><p>Automatic scraping, private content without consent, or final publishing workflows.</p><Link className="btn" href="/headquarters">Back to Headquarters</Link></section></>}

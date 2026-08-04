@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Page(){return <><h1>Living Library</h1><section className="card"><h2>Purpose</h2><p>A future home for organized memory, references, family knowledge, and meaningful records.</p><h2>Current status</h2><p>Prototype placeholder</p><h2>What belongs there</h2><p>Curated references, durable notes, memories, and context.</p><h2>What does not belong there</h2><p>Dense dashboards, private content from outside systems, or automatic publishing.</p><Link className="btn" href="/headquarters">Back to Headquarters</Link></section></>}

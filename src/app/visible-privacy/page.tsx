@@ -1,0 +1,1 @@
+import { PrivacyStates } from '@/components/privacy/PrivacyStates';export default function VisiblePrivacyPage(){return <><h1>Visible Privacy</h1><p>LifeCove uses plain visible states so sharing choices are understandable before anything changes.</p><PrivacyStates/></>}

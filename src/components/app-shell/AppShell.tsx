@@ -1,0 +1,2 @@
+import { MainNavigation } from '@/components/navigation/MainNavigation';import { siteConfig } from '@/config/site';
+export function AppShell({children}:{children:React.ReactNode}){return <div className="shell"><a className="skip-link" href="#main-content">Skip to content</a><header className="container" role="banner"><div className="card" style={{display:'flex',justifyContent:'space-between',gap:'1rem',alignItems:'center',flexWrap:'wrap'}}><strong>{siteConfig.name}</strong><MainNavigation/></div></header><main id="main-content" className="container">{children}</main></div>}
